@@ -12,7 +12,13 @@ export default class Blockchain {
    * Creates a new Blockchain
    */
   constructor() {
-    this.blocks = [new Block(this.nextId, "", "Genesis Block")];
+    this.blocks = [
+      new Block({
+        index: this.nextId,
+        previousHash: "",
+        data: "Genesis Block",
+      } as Block),
+    ];
     this.nextId++;
   }
   /**
@@ -32,11 +38,16 @@ export default class Blockchain {
     const lastBlock = this.getLastBlock();
 
     const validation = block.isValid(lastBlock.hash, lastBlock.index);
-    if (!validation.sucess) return new Validation(false, `Invalid block ${validation.message}`);
+    if (!validation.sucess)
+      return new Validation(false, `Invalid block ${validation.message}`);
     this.blocks.push(block);
     this.nextId++;
     return new Validation();
-    }
+  }
+
+  getBlock(hash: string): Block | undefined {
+    return this.blocks.find((b) => b.hash === hash);
+  }
 
   /**
    * Valides the whole blockchain
@@ -49,7 +60,11 @@ export default class Blockchain {
         previousBlock.hash,
         previousBlock.index
       );
-      if (!validation.sucess) return new Validation(false,  `Invalid block #${currentBlock.index}: ${validation.message}`);
+      if (!validation.sucess)
+        return new Validation(
+          false,
+          `Invalid block #${currentBlock.index}: ${validation.message}`
+        );
     }
 
     return new Validation();
