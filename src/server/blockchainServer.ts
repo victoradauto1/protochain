@@ -14,14 +14,18 @@ const blockchain = new Blockchain();
 
 app.get("/blocks/:indexOrHash", (req, res, next) => {
   let block;
-  if (/^[0-9]+$/.test(req.params.indexOrHash))
-    block = res.json(blockchain.blocks[parseInt(req.params.indexOrHash)]);
-  else block = res.json(blockchain.getBlock(req.params.indexOrHash));
+  if (/^-?\d+$/.test(req.params.indexOrHash)) {  // Modificado aqui para aceitar números negativos
+    const index = parseInt(req.params.indexOrHash);
+    if (index < 0 || index >= blockchain.blocks.length) 
+      return res.sendStatus(404);
+    block = blockchain.blocks[index];
+  } else {
+    block = blockchain.getBlock(req.params.indexOrHash);
+  }
 
   if (!block) return res.sendStatus(404);
-  else return res.json(block);
+  return res.json(block);
 });
-
 app.get("/status", (req, res, next) => {
   res.json({
     numberOfBlocks: blockchain.blocks.length,

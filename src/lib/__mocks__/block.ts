@@ -23,7 +23,7 @@ export default class Block {
   }
 
   getHash(): string {
-    return this.hash || "abdc";
+    return this.hash || "abc";
   }
 
   /**

@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>48/48</span>
+                <span class='fraction'>0/48</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>26/26</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>3/3</span>
+                <span class='fraction'>0/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">0% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>48/48</span>
+                <span class='fraction'>0/48</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line low'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -111,102 +111,102 @@
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">10x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">14x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">8x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import sha256 from "crypto-js/sha256";
-import Validation from "./validation";
-&nbsp;
-/**
- * Block class
- */
-export default class Block {
-  index: number;
-  timestamp: number;
-  hash: string;
-  previousHash: string;
-  data: string;
-&nbsp;
-  /**
-   * Creates a new Block
-   * @param block The block data
-   */
-  constructor(block?: Block) {
-    this.index = block?.index || 0;
-    this.timestamp = block?.timestamp || Date.now();
-    this.previousHash = block?.previousHash || "";
-    this.data = block?.data || "";
-    this.hash = block?.hash || this.getHash();
-  }
-&nbsp;
-  getHash(): string {
-    return sha256(
-      this.index + this.previousHash + this.timestamp + this.data
-    ).toString();
-  }
-&nbsp;
-  /**
-   * Validates the blocks
-   * @returns Returns true if the block is valid
-   */
-  isValid(previousHash: string, previousIndex: number): Validation {
-    if (this.timestamp &lt;= 0) return new Validation(false, "Invalid timestamp");
-    if (!this.data) return new Validation(false, "Invalid data");
-    if (previousIndex != this.index - 1)
-      return new Validation(false, "Invalid Index");
-    if (this.hash !== this.getHash())
-      return new Validation(false, "Invalid hash");
-    if (this.previousHash != previousHash)
-      return new Validation(false, "Invalid previousHash");
-&nbsp;
-    return new Validation();
-  }
-}
+<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js"><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >import sha256 from "crypto-js/sha256";</span></span></span>
+<span class="cstat-no" title="statement not covered" >import Validation from "./validation";</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >/**</span>
+<span class="cstat-no" title="statement not covered" > * Block class</span>
+<span class="cstat-no" title="statement not covered" > */</span>
+<span class="cstat-no" title="statement not covered" >export default class Block {</span>
+<span class="cstat-no" title="statement not covered" >  index: number;</span>
+<span class="cstat-no" title="statement not covered" >  timestamp: number;</span>
+<span class="cstat-no" title="statement not covered" >  hash: string;</span>
+<span class="cstat-no" title="statement not covered" >  previousHash: string;</span>
+<span class="cstat-no" title="statement not covered" >  data: string;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  /**</span>
+<span class="cstat-no" title="statement not covered" >   * Creates a new Block</span>
+<span class="cstat-no" title="statement not covered" >   * @param block The block data</span>
+<span class="cstat-no" title="statement not covered" >   */</span>
+<span class="cstat-no" title="statement not covered" >  constructor(block?: Block) {</span>
+<span class="cstat-no" title="statement not covered" >    this.index = block?.index || 0;</span>
+<span class="cstat-no" title="statement not covered" >    this.timestamp = block?.timestamp || Date.now();</span>
+<span class="cstat-no" title="statement not covered" >    this.previousHash = block?.previousHash || "";</span>
+<span class="cstat-no" title="statement not covered" >    this.data = block?.data || "";</span>
+<span class="cstat-no" title="statement not covered" >    this.hash = block?.hash || this.getHash();</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  getHash(): string {</span>
+<span class="cstat-no" title="statement not covered" >    return sha256(</span>
+<span class="cstat-no" title="statement not covered" >      this.index + this.previousHash + this.timestamp + this.data</span>
+<span class="cstat-no" title="statement not covered" >    ).toString();</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  /**</span>
+<span class="cstat-no" title="statement not covered" >   * Validates the blocks</span>
+<span class="cstat-no" title="statement not covered" >   * @returns Returns true if the block is valid</span>
+<span class="cstat-no" title="statement not covered" >   */</span>
+<span class="cstat-no" title="statement not covered" >  isValid(previousHash: string, previousIndex: number): Validation {</span>
+<span class="cstat-no" title="statement not covered" >    if (this.timestamp &lt;= 0) return new Validation(false, "Invalid timestamp");</span>
+<span class="cstat-no" title="statement not covered" >    if (!this.data) return new Validation(false, "Invalid data");</span>
+<span class="cstat-no" title="statement not covered" >    if (previousIndex != this.index - 1)</span>
+<span class="cstat-no" title="statement not covered" >      return new Validation(false, "Invalid Index");</span>
+<span class="cstat-no" title="statement not covered" >    if (this.hash !== this.getHash())</span>
+<span class="cstat-no" title="statement not covered" >      return new Validation(false, "Invalid hash");</span>
+<span class="cstat-no" title="statement not covered" >    if (this.previousHash != previousHash)</span>
+<span class="cstat-no" title="statement not covered" >      return new Validation(false, "Invalid previousHash");</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    return new Validation();</span>
+<span class="cstat-no" title="statement not covered" >  }</span>
+<span class="cstat-no" title="statement not covered" >}</span>
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -214,7 +214,7 @@ export default class Block {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-10-28T19:03:34.939Z
+                at 2024-10-29T19:19:36.294Z
             </div>
         <script src="../prettify.js"></script>
         <script>
