@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import Block from "../lib/block";
 import Blockchain from "../lib/blockchain";
@@ -12,21 +12,7 @@ app.use(express.json());
 
 const blockchain = new Blockchain();
 
-app.get("/blocks/:indexOrHash", (req, res, next) => {
-  let block;
-  if (/^-?\d+$/.test(req.params.indexOrHash)) {  // Modificado aqui para aceitar números negativos
-    const index = parseInt(req.params.indexOrHash);
-    if (index < 0 || index >= blockchain.blocks.length) 
-      return res.sendStatus(404);
-    block = blockchain.blocks[index];
-  } else {
-    block = blockchain.getBlock(req.params.indexOrHash);
-  }
-
-  if (!block) return res.sendStatus(404);
-  return res.json(block);
-});
-app.get("/status", (req, res, next) => {
+app.get("/status", (req: Request, res: Response, next: NextFunction) => {
   res.json({
     numberOfBlocks: blockchain.blocks.length,
     isValid: blockchain.isValid(),
@@ -34,7 +20,30 @@ app.get("/status", (req, res, next) => {
   });
 });
 
-app.post("/blocks", (req, res, next) => {
+app.get("/blocks/next", (req: Request, res: Response, next: NextFunction) => {
+  res.json(blockchain.getNextBlock());
+});
+
+app.get(
+  "/blocks/:indexOrHash",
+  (req: Request, res: Response, next: NextFunction) => {
+    let block;
+    if (/^-?\d+$/.test(req.params.indexOrHash)) {
+      // Modificado aqui para aceitar números negativos
+      const index = parseInt(req.params.indexOrHash);
+      if (index < 0 || index >= blockchain.blocks.length)
+        return res.sendStatus(404);
+      block = blockchain.blocks[index];
+    } else {
+      block = blockchain.getBlock(req.params.indexOrHash);
+    }
+
+    if (!block) return res.sendStatus(404);
+    return res.json(block);
+  }
+);
+
+app.post("/blocks", (req: Request, res: Response, next: NextFunction) => {
   if (req.body.hash === undefined) return res.sendStatus(422);
 
   const block = new Block(req.body as Block);

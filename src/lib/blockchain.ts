@@ -1,4 +1,5 @@
 import Block from "./block";
+import BlockInfo from "./blockInfo";
 import Validation from "./validation";
 
 /**
@@ -7,6 +8,8 @@ import Validation from "./validation";
 export default class Blockchain {
   blocks: Block[];
   nextId: number = 0;
+  static readonly DIFFICULTY_FACTORY = 5;
+  static readonly MAX_DIFFICULTY = 62;
 
   /**
    * Creates a new Blockchain
@@ -29,6 +32,10 @@ export default class Blockchain {
     return this.blocks[this.blocks.length - 1];
   }
 
+  getDifficulty(): number {
+    return Math.ceil(this.blocks.length / Blockchain.DIFFICULTY_FACTORY);
+  }
+
   /**
    * Add a new block in the blockchain
    * @param block
@@ -37,7 +44,11 @@ export default class Blockchain {
   addBlock(block: Block): Validation {
     const lastBlock = this.getLastBlock();
 
-    const validation = block.isValid(lastBlock.hash, lastBlock.index);
+    const validation = block.isValid(
+      lastBlock.hash,
+      lastBlock.index,
+      this.getDifficulty()
+    );
     if (!validation.sucess)
       return new Validation(false, `Invalid block ${validation.message}`);
     this.blocks.push(block);
@@ -58,7 +69,8 @@ export default class Blockchain {
       const previousBlock = this.blocks[i - 1];
       const validation = currentBlock.isValid(
         previousBlock.hash,
-        previousBlock.index
+        previousBlock.index,
+        this.getDifficulty()
       );
       if (!validation.sucess)
         return new Validation(
@@ -68,5 +80,26 @@ export default class Blockchain {
     }
 
     return new Validation();
+  }
+
+  getFeePerTx(): number {
+    return 1;
+  }
+
+  getNextBlock(): BlockInfo {
+    const data = new Date().toString();
+    const difficulty = this.getDifficulty();
+    const previousHash = this.getLastBlock().hash;
+    const index = this.blocks.length;
+    const feePerTx = this.getFeePerTx();
+    const maxDifficulty = Blockchain.MAX_DIFFICULTY;
+    return {
+      data,
+      difficulty,
+      previousHash,
+      index,
+      feePerTx,
+      maxDifficulty,
+    } as BlockInfo;
   }
 }

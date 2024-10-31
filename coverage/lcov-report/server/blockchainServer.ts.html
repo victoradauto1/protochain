@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">96.15% </span>
+                <span class="strong">96.72% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>50/52</span>
+                <span class='fraction'>59/61</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">80% </span>
+                <span class="strong">81.25% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>12/15</span>
+                <span class='fraction'>13/16</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">96.15% </span>
+                <span class="strong">96.72% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>50/52</span>
+                <span class='fraction'>59/61</span>
             </div>
         
             
@@ -115,7 +115,30 @@
 <a name='L50'></a><a href='#L50'>50</a>
 <a name='L51'></a><a href='#L51'>51</a>
 <a name='L52'></a><a href='#L52'>52</a>
-<a name='L53'></a><a href='#L53'>53</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -135,6 +158,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -142,13 +166,7 @@
 <span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -167,7 +185,7 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import express, { Application } from "express";
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import express, { Application, NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import Block from "../lib/block";
 import Blockchain from "../lib/blockchain";
@@ -181,21 +199,7 @@ app.use(express.json());
 &nbsp;
 const blockchain = new Blockchain();
 &nbsp;
-app.get("/blocks/:indexOrHash", (req, res, next) =&gt; {
-  let block;
-  if (/^-?\d+$/.test(req.params.indexOrHash)) {  // Modificado aqui para aceitar números negativos
-    const index = parseInt(req.params.indexOrHash);
-    if (index &lt; 0 || index &gt;= blockchain.blocks.length) 
-      return res.sendStatus(404);
-    block = blockchain.blocks[index];
-  } else {
-    block = blockchain.getBlock(req.params.indexOrHash);
-  }
-&nbsp;
-  if (!block) <span class="branch-0 cbranch-no" title="branch not covered" >return res.sendStatus(404);</span>
-  return res.json(block);
-});
-app.get("/status", (req, res, next) =&gt; {
+app.get("/status", (req: Request, res: Response, next: NextFunction) =&gt; {
   res.json({
     numberOfBlocks: blockchain.blocks.length,
     isValid: blockchain.isValid(),
@@ -203,7 +207,30 @@ app.get("/status", (req, res, next) =&gt; {
   });
 });
 &nbsp;
-app.post("/blocks", (req, res, next) =&gt; {
+app.get("/blocks/next", (req: Request, res: Response, next: NextFunction) =&gt; {
+  res.json(blockchain.getNextBlock());
+});
+&nbsp;
+app.get(
+  "/blocks/:indexOrHash",
+  (req: Request, res: Response, next: NextFunction) =&gt; {
+    let block;
+    if (/^-?\d+$/.test(req.params.indexOrHash)) {
+      // Modificado aqui para aceitar números negativos
+      const index = parseInt(req.params.indexOrHash);
+      if (index &lt; 0 || index &gt;= blockchain.blocks.length)
+        return res.sendStatus(404);
+      block = blockchain.blocks[index];
+    } else {
+      block = blockchain.getBlock(req.params.indexOrHash);
+    }
+&nbsp;
+    if (!block) <span class="branch-0 cbranch-no" title="branch not covered" >return res.sendStatus(404);</span>
+    return res.json(block);
+  }
+);
+&nbsp;
+app.post("/blocks", (req: Request, res: Response, next: NextFunction) =&gt; {
   if (req.body.hash === undefined) return res.sendStatus(422);
 &nbsp;
   const block = new Block(req.body as Block);
@@ -226,7 +253,7 @@ export { app };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-10-29T19:19:36.294Z
+                at 2024-10-31T01:05:30.832Z
             </div>
         <script src="../prettify.js"></script>
         <script>
