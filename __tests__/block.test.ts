@@ -1,4 +1,5 @@
 import Block from "../src/lib/block";
+import BlockInfo from "../src/lib/blockInfo";
 
 const exampleDifficulty = 0;
 const exampleMiner = "wallet";
@@ -9,7 +10,6 @@ beforeAll(() => {
 });
 
 describe("Block tests", () => {
-
   test("should be valid", () => {
     const block = new Block({
       index: 1,
@@ -20,13 +20,27 @@ describe("Block tests", () => {
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeTruthy();
   });
-  
+
+  test("should create from blockInfo", () => {
+    const block = Block.fromBlockInfo({
+      data: "Block 2",
+      difficulty: exampleDifficulty,
+      feePerTx: 1,
+      index: 1,
+      maxDifficulty: 62,
+      previousHash: genesis.hash,
+    } as BlockInfo);
+    block.mine(exampleDifficulty, exampleMiner);
+    const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
+    expect(valid.sucess).toBeTruthy();
+  });
+
   test("should be NOT valid (fall backs)", () => {
     const block = new Block();
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();
   });
-  
+
   test("should be NOT valid(index)", () => {
     const block = new Block({ index: -1, data: "abc" } as Block);
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
@@ -35,7 +49,7 @@ describe("Block tests", () => {
 
   test("should be NOT valid( empty hash)", () => {
     const block = new Block({ index: 1, data: "abc" } as Block);
-    block.mine(exampleDifficulty, exampleMiner)
+    block.mine(exampleDifficulty, exampleMiner);
     block.hash = "";
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();
@@ -57,7 +71,11 @@ describe("Block tests", () => {
 
   test("should be NOT valid( invalid previous hash)", () => {
     const block = new Block({ index: 1, data: "abc" } as Block);
-    const valid = block.isValid("invalid hash", genesis.index, exampleDifficulty);
+    const valid = block.isValid(
+      "invalid hash",
+      genesis.index,
+      exampleDifficulty
+    );
     expect(valid.sucess).toBeFalsy();
   });
 

@@ -7,7 +7,7 @@
     "start": "node ./dist/blockchain.js",
     "test": "jest",
     "blockchain": "ts-node ./src/server/blockchainServer.ts --run",
-    "miner": "ts-node .src/client/minerClient.ts"
+    "miner": "ts-node ./src/client/minerClient.ts"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +28,7 @@
     "@types/crypto-js": "^4.2.2",
     "axios": "^1.7.7",
     "crypto-js": "^4.2.0",
+    "dotenv-safe": "^9.1.0",
     "express": "^4.21.1",
     "morgan": "^1.10.0"
   }
