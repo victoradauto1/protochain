@@ -1,6 +1,7 @@
 import Validation from "../validation";
 import Block from "./block";
 import BlockInfo from "../blockInfo";
+import Transaction from "../transaction";
 
 /**
  * Mocked blockchain class
@@ -63,7 +64,9 @@ export default class Blockchain {
   getNextBlock(): BlockInfo {
    
     return {
-      data:  new Date().toString(),
+      transactions: [new Transaction({
+        data: new Date().toString()
+      } as Transaction)],
       difficulty: 0,
       previousHash: this.getLastBlock().hash,
       index: 1,
