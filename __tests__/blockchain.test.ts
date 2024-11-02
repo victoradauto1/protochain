@@ -4,6 +4,7 @@ import { jest } from "@jest/globals";
 import Transaction from "../src/lib/transaction";
 
 jest.mock("../src/lib/block")
+jest.mock('../src/lib/transaction')
 
 describe("Blockchain tests", () => {
 

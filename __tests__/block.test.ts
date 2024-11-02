@@ -1,10 +1,13 @@
 import Block from "../src/lib/block";
 import BlockInfo from "../src/lib/blockInfo";
 import Transaction from "../src/lib/transaction";
+import TransactionType from "../src/lib/transactionType";
 
 const exampleDifficulty = 0;
 const exampleMiner = "wallet";
 let genesis: Block;
+
+jest.mock('../src/lib/transaction')
 
 beforeAll(() => {
   genesis = new Block({
@@ -30,6 +33,39 @@ describe("Block tests", () => {
     block.mine(exampleDifficulty, exampleMiner);
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeTruthy();
+  });
+
+  test("should be NOT valid (2 FEE)", () => {
+    const block = new Block({
+      index: 1,
+      previousHash: genesis.hash,
+      transactions: [
+        new Transaction({
+          type: TransactionType.FEE,
+          data: "fee 1",
+        } as Transaction),
+        new Transaction({
+          type: TransactionType.FEE,
+          data: "fee 2",
+        } as Transaction)
+      ],
+    } as Block);
+    block.mine(exampleDifficulty, exampleMiner);
+    const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
+    expect(valid.sucess).toBeFalsy();
+  });
+
+  test("should be NOT valid (Invalid tx)", () => {
+    const block = new Block({
+      index: 1,
+      previousHash: genesis.hash,
+      transactions: [
+        new Transaction({} as Transaction)
+      ],
+    } as Block);
+    block.mine(exampleDifficulty, exampleMiner);
+    const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
+    expect(valid.sucess).toBeFalsy();
   });
 
   test("should create from blockInfo", () => {

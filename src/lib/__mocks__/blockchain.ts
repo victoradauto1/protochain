@@ -1,7 +1,8 @@
 import Validation from "../validation";
 import Block from "./block";
 import BlockInfo from "../blockInfo";
-import Transaction from "../transaction";
+import Transaction from "./transaction";
+import TransactionType from "../transactionType";
 
 /**
  * Mocked blockchain class
@@ -19,7 +20,10 @@ export default class Blockchain {
         index: 0,
         hash: "abc",
         previousHash: "",
-        data: "Genesis Block",
+        transactions:[new Transaction({
+          data: "t1",
+          type: TransactionType.FEE
+        } as Transaction)],
         timestamp: Date.now(),
       } as Block),
     ];
