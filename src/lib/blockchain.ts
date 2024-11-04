@@ -112,6 +112,8 @@ export default class Blockchain {
     const blockIndex = this.blocks.findIndex((b) =>
       b.transactions.some((tx) => tx.hash === hash)
     );
+
+
     if (blockIndex !== -1)
       return {
         blockIndex,
@@ -122,7 +124,7 @@ export default class Blockchain {
 
     return {
       mempoolIndex: -1,
-      blockIndex: -1,
+      blockIndex: -1
     } as TransactionSearch;
   }
 
