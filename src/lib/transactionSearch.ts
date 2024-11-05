@@ -1,7 +1,7 @@
 import Transaction from "./transaction";
 
 export default interface TransactionSearch {
-  transaction: Transaction;
+  transaction: Transaction | null;
   mempoolIndex: number;
   blockIndex: number;
 }
