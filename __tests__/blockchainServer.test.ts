@@ -3,9 +3,11 @@ import request from "supertest";
 import Block from "../src/lib/block";
 import { app } from "../src/server/blockchainServer";
 import Transaction from "../src/lib/transaction";
+import TransactionInput from "../src/lib/transactionInput";
 
 jest.mock("../src/lib/block.ts");
 jest.mock("../src/lib/blockchain.ts");
+jest.mock("../src/lib/transactionInput");
 
 describe("BlockchainServer tests", () => {
   test("GET / status  - Should return status", async () => {
@@ -67,7 +69,8 @@ describe("BlockchainServer tests", () => {
 
   test("POST / transactions/ - should add tx", async () => {
     const tx = new Transaction({
-      data: "tx1"
+      txInput: new TransactionInput(),
+      to: "CarteiraTo"
     } as Transaction)
     const response = await request(app).post("/transactions/").send(tx);
     expect(response.status).toEqual(201);

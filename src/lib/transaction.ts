@@ -35,9 +35,7 @@ export default class Transaction {
     if (this.txInput){
       const validation = this.txInput.IsValid();
         if(!validation.sucess) return new Validation(false, `Invalid tx: ${validation.message}`)
-    }
-    
-    
-    
+    }    
     return new Validation();
+  }
 }

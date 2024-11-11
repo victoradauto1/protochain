@@ -26,12 +26,10 @@ export default class TransactionInput {
    * @param privateKey The 'from' private key
    */
   sign(privateKey: string): void {
-    const preSignature = ECPair.fromPrivateKey(Buffer.from(privateKey, "hex"))
-      .sign(Buffer.from(this.getHash(), "hex"))
-      .toString();
-    Buffer.isBuffer(preSignature)
-      ? (this.signature = preSignature)
-      : (this.signature = Buffer.from(preSignature).toString("hex"));
+    const preSignature = ECPair.fromPrivateKey(
+      Buffer.from(privateKey, "hex")
+    ).sign(Buffer.from(this.getHash(), "hex"));
+    this.signature = Buffer.from(preSignature).toString("hex");
   }
 
   /**
@@ -47,26 +45,13 @@ export default class TransactionInput {
    * @returns returns a validation input object
    */
   IsValid(): Validation {
-    if (!this.signature) {
-      return new Validation(false, "Signature is required.");
-    }
-    if (this.amount < 1) {
-      return new Validation(false, "Amount must be greater than zero.");
-    }
+    if (!this.signature) return new Validation(false, "Signature is required.");
+    if(this.amount < 1) return new Validation(false, "Amount must be greater than zero.")
 
-    const hash = Buffer.from(this.getHash(), "hex");
+      const hash = Buffer.from(this.getHash(), "hex");
+      const isValid = ECPair.fromPublicKey(Buffer.from(this.fromAddress, "hex"))
+        .verify(hash, Buffer.from(this.signature, "hex"));
 
-    try {
-      const publicKey = Buffer.from(this.fromAddress, "hex");
-      const isValid = ECPair.fromPublicKey(publicKey).verify(
-        hash,
-        Buffer.from(this.signature, "hex")
-      );
-      return isValid
-        ? new Validation(true, "Transaction input is valid.")
-        : new Validation(false, "Invalid transaction input signature.");
-    } catch (error) {
-      return new Validation(false, "Invalid public key or signature format.");
-    }
+    return isValid? new Validation() : new Validation(false, "Invalid tx Input signature.")
   }
 }

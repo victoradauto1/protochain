@@ -7,20 +7,22 @@ const ECPair = ECPairFactory(ecc);
  * Wallet Class
  */
 export default class Wallet {
-  privateKey: string;
-  publicKey: string;
+  privateKey = "";
+  publicKey = "";
 
   constructor(wifOrWalletKey?: string) {
     let keys;
+
     if (wifOrWalletKey) {
       if (wifOrWalletKey.length === 64) {
-        keys = ECPair.fromWIF(wifOrWalletKey);
-      } else {
         keys = ECPair.fromPrivateKey(Buffer.from(wifOrWalletKey, "hex"));
+      } else {
+        keys = ECPair.fromWIF(wifOrWalletKey);
       }
     } else {
       keys = ECPair.makeRandom();
     }
+
     this.privateKey = keys.privateKey
       ? Buffer.from(keys.privateKey).toString("hex")
       : "";
