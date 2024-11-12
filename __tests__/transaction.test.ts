@@ -11,6 +11,10 @@ describe("Transaction test", () => {
       to: "carteiraTo",
       type: TransactionType.FEE,
     } as Transaction);
+
+    tx.txInput = undefined;
+    tx.hash = tx.getHash();
+    
     const valid = tx.isValid();
     expect(valid.sucess).toBeTruthy();
   });
@@ -39,8 +43,21 @@ describe("Transaction test", () => {
     expect(valid.sucess).toBeFalsy();
   });
 
-  test("should NOT be valid (Empty txInput)", () => {
+  test("should NOT be valid (Invalid to)", () => {
     const tx = new Transaction();
+    const valid = tx.isValid();
+    expect(valid.sucess).toBeFalsy();
+  });
+
+  test("should NOT be valid (Invalid txInput)", () => {
+    const tx = new Transaction({
+      to: "carteiraTo",
+      txInput: new TransactionInput({
+        amount: -10,
+        fromAddress: "From",
+        signature: "abc"
+      } as TransactionInput)
+    } as Transaction);
     const valid = tx.isValid();
     expect(valid.sucess).toBeFalsy();
   });

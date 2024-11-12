@@ -16,7 +16,11 @@ export default class Transaction {
     this.type = tx?.type || TransactionType.REGULAR;
     this.timestamp = tx?.timestamp || Date.now();
     this.to = tx?.to || "CarteiraTo";
-    this.txInput = tx?.txInput || new TransactionInput();
+    if(tx && tx.txInput){
+      this.txInput = new TransactionInput(tx?.txInput)
+    }else{
+      this.txInput = new TransactionInput()
+    }
     this.hash = tx?.hash || this.getHash();
   }
 
@@ -25,9 +29,9 @@ export default class Transaction {
   }
 
   isValid(): Validation {
-    if (!this.to) return new Validation(false, "Invalid mock transacitions");
+    if (!this.to || this.to == "") return new Validation(false, "Invalid mock transactions");
     if (!this.txInput.IsValid().sucess)
-      new Validation(false, "Invalid mock transacition.");
+      return new Validation(false, "Invalid mock transaction.");
     return new Validation();
   }
 }

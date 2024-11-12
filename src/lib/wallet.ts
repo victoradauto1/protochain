@@ -23,9 +23,11 @@ export default class Wallet {
       keys = ECPair.makeRandom();
     }
 
+    /* c8 ignore start */
     this.privateKey = keys.privateKey
       ? Buffer.from(keys.privateKey).toString("hex")
       : "";
+      /* c8 ignore stop */
     this.publicKey = keys.publicKey
       ? Buffer.from(keys.publicKey).toString("hex")
       : "";

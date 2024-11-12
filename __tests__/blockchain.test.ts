@@ -90,17 +90,18 @@ describe("Blockchain tests", () => {
   test("should NOT add transaction (invalid tx)", () => {
     const blockchain = new Blockchain();
     const txInput = new TransactionInput();
-    txInput.amount = -1;
 
     const tx = new Transaction({
       txInput,
-      hash: "xyz",
+      hash: "abc",
+      to: ""
     } as Transaction);
 
     const validation = blockchain.addTransaction(tx);
     expect(validation.sucess).toBeFalsy();
   });
 
+  
   test("should NOT add transaction (duplicated tx in blockchain)", () => {
     const blockchain = new Blockchain();
 

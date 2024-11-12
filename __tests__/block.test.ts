@@ -64,6 +64,7 @@ describe("Block tests", () => {
       transactions: [new Transaction({} as Transaction)],
     } as Block);
     block.mine(exampleDifficulty, exampleMiner);
+    block.transactions[0].to = "";
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();
   });
@@ -131,7 +132,6 @@ describe("Block tests", () => {
       ],
     } as Block);
 
-    // Ajuste o `previousHash` para o valor correto e deixe `nonce` e `miner` inválidos
     block.previousHash = genesis.hash; // Previous hash correto
     block.nonce = 0; // Nonce inválido
     block.miner = ""; // Miner inválido
@@ -191,8 +191,7 @@ describe("Block tests", () => {
 
   test("should be NOT valid(tx Invalid)", () => {
     const txInput = new TransactionInput();
-    txInput.amount = -1;
-
+  
     const block = new Block({
       index: 1,
       transactions: [
@@ -201,8 +200,10 @@ describe("Block tests", () => {
         } as Transaction),
       ],
     } as Block);
+    block.mine(exampleDifficulty, exampleMiner);
 
-    
+    block.transactions[0].to="";
+
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();
   });
