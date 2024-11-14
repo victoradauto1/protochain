@@ -118,20 +118,6 @@ describe("Blockchain tests", () => {
     expect(validation.sucess).toBeFalsy();
   });
 
-  test("should NOT add transaction (duplicated tx in mempool)", () => {
-    const blockchain = new Blockchain();
-
-    const tx = new Transaction({
-      txInput: new TransactionInput(),
-      hash: "xyz",
-    } as Transaction);
-
-    blockchain.mempool.push(tx)
-
-    const validation = blockchain.addTransaction(tx);
-    expect(validation.sucess).toBeFalsy();
-  });
-
   test("should get Transactions (mempool)", () => {
     const blockchain = new Blockchain();
 
@@ -210,6 +196,7 @@ describe("Blockchain tests", () => {
     const result = blockchain.addBlock(block);
     expect(result.sucess).toBeFalsy();
   });
+  
 
   test("should NOT add block", () => {
     const blockchain = new Blockchain();
@@ -241,4 +228,22 @@ describe("Blockchain tests", () => {
     const info = blockchain.getNextBlock();
     expect(info).toBeNull();
   });
+
+  test("Should NOT add transaction (pending tx)", ()=>{
+    const blockchain = new Blockchain();
+
+    const tx = new Transaction({
+      txInput: new TransactionInput(),
+      hash: "abc"
+    } as Transaction);
+
+    const tx2 = new Transaction({
+      txInput: new TransactionInput(),
+      hash: "abc2"
+    } as Transaction)
+
+
+    const validation = blockchain.addTransaction(tx);
+    expect(validation.sucess).toBeFalsy();
+  })
 });

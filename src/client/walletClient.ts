@@ -31,26 +31,30 @@ function menu() {
     console.log("2 - Recover Wallet");
     console.log("3 - Balance");
     console.log("4 - Send tx");
-    if (myWalletPub) console.log("5 - logOut");
+    console.log("5 - Search tx");
+    if (myWalletPub) console.log("6 - logOut");
 
     rl.question("Choose your option: ", (answer) => {
       switch (answer) {
         case "1":
-            createWallet(); 
-            break;
-          case "2":
-            recoverWallet(); 
-            break;
-          case "3":
-            getBalance(); 
-            break;
-          case "4":
-            sendTx(); 
-            break;
-          case "5":
-            logOut();
-            menu();
-            break;
+          createWallet();
+          break;
+        case "2":
+          recoverWallet();
+          break;
+        case "3":
+          getBalance();
+          break;
+        case "4":
+          sendTx();
+          break;
+        case "5":
+          searchTx();
+          break;
+        case "6":
+          logOut();
+          menu();
+          break;
         default: {
           setTimeout(() => {
             console.log("Wrong option!");
@@ -104,7 +108,7 @@ function getBalance() {
   if (!myWalletPub) {
     console.log("Ypu don´t have a wallet yet.");
     preMenu();
-    return 
+    return;
   }
 
   //TODO: Get Balance via API
@@ -117,7 +121,7 @@ function sendTx() {
   if (!myWalletPub) {
     console.log("Ypu don´t have a wallet yet.");
     preMenu();
-    return 
+    return;
   }
 
   console.log(`Your wallet is ${myWalletPub}`);
@@ -125,7 +129,7 @@ function sendTx() {
     if (toWallet.length < 66) {
       console.log(`Invalid wallet.`);
       preMenu();
-      return
+      return;
     }
 
     rl.question(`Amount: `, async (strAmount) => {
@@ -133,7 +137,7 @@ function sendTx() {
       if (!amount) {
         console.log(`Invalid amount.`);
         preMenu();
-        return
+        return;
       }
 
       //TODO: balance validation
@@ -155,7 +159,7 @@ function sendTx() {
           tx
         );
         console.log(`Transaction accepted. Waiting the miners!`);
-        console.log(txResponse.data.hash)
+        console.log(txResponse.data.hash);
       } catch (error: any) {
         console.error(error.response ? error.response.data : error.message);
       }
@@ -163,6 +167,15 @@ function sendTx() {
       preMenu();
     });
   });
+}
+
+function searchTx(){
+  console.clear();
+  rl.question(`Your tx hash: `, async (hash)=>{
+    const response =  await axios.get(`${BLOCKCHAIN_SERVER}transactions/${hash}`);
+    console.log(response.data);
+    return preMenu();
+  })
 }
 
 menu();
