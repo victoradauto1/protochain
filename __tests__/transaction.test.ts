@@ -31,6 +31,18 @@ describe("Transaction test", () => {
     expect(valid.sucess).toBeFalsy();
   });
 
+  //PROTOTIPO DE TESTE PARA COBRIR A LINHA 21 DE TRANSACTION.TS
+  // test("should create a TransactionInput with txInput provided in tx", () => {
+  //   const mockTxInput = { /* propriedades necessárias de TransactionInput */ };
+    
+  //   const tx = new Transaction({ txInput: mockTxInput } as Transaction);
+    
+  //   const transactionInputInstance = new TransactionInput(tx);
+
+  //   // Verificando que transactionInputInstance.txInput foi inicializado corretamente
+  //   expect(transactionInputInstance.txInput).toBeInstanceOf(TransactionInput);
+  //   expect(transactionInputInstance.txInput).toEqual(expect.objectContaining(mockTxInput));
+  // });
   
 
   test("should NOT be valid (Invalid Hash)", () => {
