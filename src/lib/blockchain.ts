@@ -2,6 +2,7 @@ import Block from "./block";
 import BlockInfo from "./blockInfo";
 import Transaction from "./transaction";
 import TransactionInput from "./transactionInput";
+import transactionOutput from "./transactionOutput";
 import TransactionSearch from "./transactionSearch";
 import TransactionType from "./transactionType";
 import Validation from "./validation";
@@ -21,22 +22,41 @@ export default class Blockchain {
   /**
    * Creates a new Blockchain
    */
-  constructor() {
+  constructor(miner: string) {
+    this.blocks = [];
     this.mempool = [];
-    this.blocks = [
-      new Block({
-        index: this.nextId,
-        previousHash: "",
-        transactions: [
-          new Transaction({
-            type: TransactionType.FEE,
-            txInput: new TransactionInput(),
-          } as Transaction),
-        ],
-      } as Block),
-    ];
+
+    const genesis = this.createGenesis(miner);
+    this.blocks.push(genesis);
     this.nextId++;
   }
+
+  /**
+   * Creates a Genesis Block
+   */
+  createGenesis(miner: string): Block {
+    const amount = 10; //TODO: Calcular a recompensa;
+
+    const tx = new Transaction({
+      type: TransactionType.FEE,
+      txOutputs: [
+        new transactionOutput({
+          amount,
+          toAddress: miner,
+        } as transactionOutput),
+      ],
+    } as Transaction);
+
+    tx.hash = tx.getHash();
+    tx.txOutputs[0].tx = tx.hash;
+
+    const block = new Block();
+    block.transactions = [tx];
+    block.mine(this.getDifficulty(), miner);
+
+    return block;
+  }
+
   /**
    * Get the last block at the blockchain
    * @returns The Last Block
@@ -46,15 +66,17 @@ export default class Blockchain {
   }
 
   getDifficulty(): number {
-    return Math.ceil(this.blocks.length / Blockchain.DIFFICULTY_FACTORY)+1;
+    return Math.ceil(this.blocks.length / Blockchain.DIFFICULTY_FACTORY) + 1;
   }
 
   addTransaction(transaction: Transaction): Validation {
-    if(transaction.txInput){
+    if (transaction.txInput) {
       const from = transaction.txInput.fromAddress;
-      const pendingTx = this.mempool.map(tx => tx.txInput).filter (txi => txi!.fromAddress === from)
-      if(pendingTx && pendingTx.length){
-        return new Validation(false, "This wallet has a pending transaction.")
+      const pendingTx = this.mempool
+        .map((tx) => tx.txInput)
+        .filter((txi) => txi!.fromAddress === from);
+      if (pendingTx && pendingTx.length) {
+        return new Validation(false, "This wallet has a pending transaction.");
       }
 
       //TODO: Validar a origem dos fundos
@@ -132,7 +154,7 @@ export default class Blockchain {
     return {
       mempoolIndex: -1,
       blockIndex: -1,
-      transaction: null
+      transaction: null,
     } as TransactionSearch;
   }
 

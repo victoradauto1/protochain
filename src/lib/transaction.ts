@@ -48,12 +48,21 @@ export default class Transaction {
   isValid(): Validation {
     if (this.hash !== this.getHash())
       return new Validation(false, "Invalid hash.");
-    if (!this.txOutputs || !this.txOutputs.length) return new Validation(false, "Invalid to.");
-    if (this.txInput) {
-      const validation = this.txInput.IsValid();
-      if (!validation.sucess)
-        return new Validation(false, `Invalid tx: ${validation.message}`);
+    if (!this.txOutputs || !this.txOutputs.length || this.txOutputs.map( txo => txo.isValid()).some(v => !v.sucess)) return new Validation(false, "Invalid TXO.");
+    if (this.txInputs && this.txInputs.length) {
+      const validations = this.txInputs.map(txi => txi.IsValid()).filter(v => !v.sucess);
+      if (validations && validations.length){
+        const message = validations.map(v => v.message).join(" ");
+        return new Validation(false, `Invalid tx: ${message}`)};
+    
+      const inputSum = this.txInputs.map( txi => txi.amount).reduce((a,b) => a+b, 0);
+      const outputSum = this.txInputs.map( txo => txo.amount).reduce((a,b) => a+b, 0);
+      if(inputSum < outputSum) return new Validation(false, "invalid tx: input must be equal or greater than output amount.")
     }
+
+    if(this.txOutputs.some(txo => txo.tx !== this.hash)) return new Validation(false, "Invalid TXO reference hash.");
+
+    // TODO: validar taxas e recompensas quando tx.type === FEE.
     return new Validation();
   }
 }
