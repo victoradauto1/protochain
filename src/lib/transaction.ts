@@ -1,5 +1,6 @@
 import sha256 from "crypto-js/sha256";
 import TransactionInput from "./transactionInput";
+import transactionOutput from "./transactionOutput";
 import TransactionType from "./transactionType";
 import Validation from "./validation";
 
@@ -10,43 +11,49 @@ export default class Transaction {
   type: TransactionType;
   timestamp: number;
   hash: string;
-  txInput: TransactionInput | undefined;
-  to: string;
+  txInputs: TransactionInput[] | undefined;
+  txOutputs: transactionOutput[];
 
   constructor(tx?: Transaction) {
     this.type = tx?.type || TransactionType.REGULAR;
     this.timestamp = tx?.timestamp || Date.now();
-    this.to = tx?.to || "";
-    if(tx && tx.txInput){
-      this.txInput = new TransactionInput(tx?.txInput)
-    }else{
-      this.txInput = undefined;
-    }
+
+    this.txInputs = tx?.txInputs
+      ? tx.txInputs.map((txi) => new TransactionInput(txi))
+      : undefined;
+
+    this.txOutputs = tx?.txOutputs
+      ? tx.txOutputs.map((txo) => new transactionOutput(txo))
+      : [];
+
     this.hash = tx?.hash || this.getHash();
+
+    this.txOutputs.forEach((txo, index, arr) => (arr[index].tx = this.hash));
   }
 
   getHash(): string {
-    if (this.txInput){
-      return sha256(
-        this.type + this.timestamp + this.txInput.getHash() + this.to
-      ).toString();
-    } else{
-      return sha256(
-        this.type + this.timestamp + this.to
-      ).toString();
-    }
-    
+    const from =
+      this.txInputs && this.txInputs.length
+        ? this.txInputs.map((txi) => txi.signature).join(",")
+        : "";
+
+    const to =
+      this.txOutputs && this.txOutputs.length
+        ? this.txOutputs.map((txo) => txo.getHash()).join(",")
+        : "";
+
+    return sha256(this.type + from + to + this.timestamp).toString();
   }
 
   isValid(): Validation {
     if (this.hash !== this.getHash())
       return new Validation(false, "Invalid hash.");
-    if (!this.to) 
-      return new Validation(false, "Invalid to.");
-    if (this.txInput){
+    if (!this.txOutputs || !this.txOutputs.length) return new Validation(false, "Invalid to.");
+    if (this.txInput) {
       const validation = this.txInput.IsValid();
-        if(!validation.sucess) return new Validation(false, `Invalid tx: ${validation.message}`)
-    }    
+      if (!validation.sucess)
+        return new Validation(false, `Invalid tx: ${validation.message}`);
+    }
     return new Validation();
   }
 }

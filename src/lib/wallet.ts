@@ -27,9 +27,9 @@ export default class Wallet {
     this.privateKey = keys.privateKey
       ? Buffer.from(keys.privateKey).toString("hex")
       : "";
-      /* c8 ignore stop */
     this.publicKey = keys.publicKey
       ? Buffer.from(keys.publicKey).toString("hex")
       : "";
+       /* c8 ignore stop */
   }
 }

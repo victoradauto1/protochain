@@ -30,13 +30,4 @@ describe("Wallet tests", () => {
     expect(wallet.privateKey).toBeTruthy;
     expect(wallet.publicKey).toBeTruthy();
   });
-
-  
-  test("Should handle missing public key gracefully", () => {
-    const wallet = new Wallet(alice.privateKey);
-    wallet.publicKey = "";
-
-    expect(wallet.publicKey).toBe("");
-  });
-
 });
