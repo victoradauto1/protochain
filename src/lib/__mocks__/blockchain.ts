@@ -2,7 +2,6 @@ import Validation from "../validation";
 import Block from "./block";
 import BlockInfo from "../blockInfo";
 import Transaction from "./transaction";
-import TransactionType from "../transactionType";
 import TransactionSearch from "../transactionSearch";
 import TransactionInput from "./transactionInput";
 
@@ -21,21 +20,17 @@ export default class Blockchain {
   /**
    * Creates a new Mock Blockchain
    */
-  constructor() {
-    this.mempool = [];
-    this.blocks = [
-      new Block({
-        index: this.nextId,
-        previousHash: "",
-        transactions: [
-          new Transaction({
-            type: TransactionType.FEE,
-            txInput: new TransactionInput(),
-            hash: "abc"
-          } as Transaction),
-        ],
-      } as Block),
-    ];
+  constructor(miner: string) {
+    this.blocks = [];
+    this.mempool = [new Transaction()];
+
+    this.blocks. push( new Block({
+      index: 0,
+      hash: "abc",
+      previousHash: "",
+      miner,
+      timestamp: Date.now()
+    } as Block));
     this.nextId++;
   }
   /**
@@ -60,6 +55,8 @@ export default class Blockchain {
   }
 
   getBlock(hash: string): Block | undefined {
+    if(!hash || hash === "-1")
+      return undefined;
     return this.blocks.find((b) => b.hash === hash);
   }
  
@@ -70,12 +67,10 @@ export default class Blockchain {
   getNextBlock(): BlockInfo {
    
     return {
-      transactions: [new Transaction({
-        txInput: new TransactionInput()
-      } as Transaction)],
+      transactions: this.mempool.slice(0,2),
       difficulty: 1,
       previousHash: this.getLastBlock().hash,
-      index: 1,
+      index: this.blocks.length,
       feePerTx: this.getFeePerTx() ,
       maxDifficulty: 62,
     } as BlockInfo;
@@ -92,21 +87,22 @@ export default class Blockchain {
     // For the mock, let's just return a constant value
     return 5;
   }
-  
+
+  getTransaction(hash: string): TransactionSearch {
+    if(hash === "-1")
+      return { mempoolIndex: -1, blockIndex: -1} as TransactionSearch;
+    return {
+      mempoolIndex:0,
+      transaction:new Transaction()
+    } as TransactionSearch
+  };
+
+   
   /**
    * Valides the whole mock blockchain
    */
   isValid(): Validation {
     // For the mock, let's just return a valid Validation
     return new Validation(true);
-  }
-
-  getTransaction(hash: string): TransactionSearch {
-    return {
-      mempoolIndex:0,
-      transaction:{
-        hash
-      }
-    } as TransactionSearch
   }
 }

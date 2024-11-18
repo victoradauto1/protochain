@@ -5,6 +5,7 @@ import axios from "axios";
 import readline from "readline";
 import Transaction from "../lib/transaction";
 import TransactionInput from "../lib/transactionInput";
+import transactionOutput from "../lib/transactionOutput";
 import TransactionType from "../lib/transactionType";
 import Wallet from "../lib/wallet";
 
@@ -140,18 +141,39 @@ function sendTx() {
         return;
       }
 
-      //TODO: balance validation
+      const walletResponse = await axios.get(
+        `${BLOCKCHAIN_SERVER}wallets/${myWalletPub}`
+      );
+      const balance = walletResponse.data.balance as number;
+      const fee = walletResponse.data.fee as number;
+      const utxo = walletResponse.data.utxo as transactionOutput[];
+
+      if (balance < amount + fee) {
+        console.log("Insufficient balance (tx + fee).");
+        preMenu();
+      }
+
       const tx = new Transaction();
       tx.timestamp = Date.now();
-      tx.to = toWallet;
-      tx.type = TransactionType.REGULAR;
-      tx.txInput = new TransactionInput({
-        amount,
-        fromAddress: myWalletPub,
-      } as TransactionInput);
+      tx.txOutputs = [
+        new transactionOutput({
+          toAddress: toWallet,
+          amount,
+        } as transactionOutput),
+      ];
 
-      tx.txInput.sign(myWalletPri);
+      tx.type = TransactionType.REGULAR;
+      tx.txInputs = [
+        new TransactionInput({
+          amount,
+          fromAddress: myWalletPub,
+          previousTx: utxo[0].tx
+        } as TransactionInput),
+      ];
+
+      tx.txInputs[0].sign(myWalletPri);
       tx.hash = tx.getHash();
+      tx.txOutputs[0].tx = tx.hash;
 
       try {
         const txResponse = await axios.post(
@@ -169,13 +191,15 @@ function sendTx() {
   });
 }
 
-function searchTx(){
+function searchTx() {
   console.clear();
-  rl.question(`Your tx hash: `, async (hash)=>{
-    const response =  await axios.get(`${BLOCKCHAIN_SERVER}transactions/${hash}`);
+  rl.question(`Your tx hash: `, async (hash) => {
+    const response = await axios.get(
+      `${BLOCKCHAIN_SERVER}transactions/${hash}`
+    );
     console.log(response.data);
     return preMenu();
-  })
+  });
 }
 
 menu();

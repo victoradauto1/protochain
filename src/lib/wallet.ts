@@ -11,6 +11,7 @@ export default class Wallet {
   publicKey = "";
 
   constructor(wifOrWalletKey?: string) {
+    console.log("Wallet Key Provided:", wifOrWalletKey);
     let keys;
 
     if (wifOrWalletKey) {

@@ -1,8 +1,7 @@
-import { SHA256 } from "crypto-js";
-import Validation from "./validation";
+import Validation from "../validation";
 
 /**
- * Transaction Output class
+ * Mocked Transaction Output class
  */
 export default class transactionOutput {
   toAddress: string;
@@ -10,9 +9,9 @@ export default class transactionOutput {
   tx?: string;
 
   constructor(txOutput?: transactionOutput) {
-    this.toAddress = txOutput?.toAddress || "";
-    this.amount = txOutput?.amount || 0;
-    this.tx = txOutput?.tx || "";
+    this.toAddress = txOutput?.toAddress || "abc";
+    this.amount = txOutput?.amount || 10;
+    this.tx = txOutput?.tx || "xyz";
   }
 
   isValid(): Validation {
@@ -21,6 +20,6 @@ export default class transactionOutput {
   };
 
   getHash(): string{
-    return SHA256(this.toAddress + this.amount).toString();
+    return "abc"
   };
 }

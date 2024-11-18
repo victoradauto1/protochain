@@ -1,7 +1,6 @@
 import Block from "./block";
 import BlockInfo from "./blockInfo";
 import Transaction from "./transaction";
-import TransactionInput from "./transactionInput";
 import transactionOutput from "./transactionOutput";
 import TransactionSearch from "./transactionSearch";
 import TransactionType from "./transactionType";
@@ -70,16 +69,18 @@ export default class Blockchain {
   }
 
   addTransaction(transaction: Transaction): Validation {
-    if (transaction.txInput) {
-      const from = transaction.txInput.fromAddress;
+    if (transaction.txInputs && transaction.txInputs.length) {
+      const from = transaction.txInputs[0].fromAddress;
       const pendingTx = this.mempool
-        .map((tx) => tx.txInput)
+        .filter((tx) => tx.txInputs && tx.txInputs.length)
+        .map((tx) => tx.txInputs)
+        .flat()
         .filter((txi) => txi!.fromAddress === from);
       if (pendingTx && pendingTx.length) {
         return new Validation(false, "This wallet has a pending transaction.");
       }
 
-      //TODO: Validar a origem dos fundos
+      //TODO: Validar a origem dos fundos (VTXO)
     }
 
     const validation = transaction.isValid();
@@ -103,13 +104,15 @@ export default class Blockchain {
    * @returns A valid block to be add in the blockchain
    */
   addBlock(block: Block): Validation {
-    const lastBlock = this.getLastBlock();
+    const nextBlock = this.getNextBlock();
+    if(!nextBlock) return new Validation(false, "There´s no next block info.");
 
     const validation = block.isValid(
-      lastBlock.hash,
-      lastBlock.index,
-      this.getDifficulty()
+      nextBlock.previousHash,
+      nextBlock.index - 1,
+      nextBlock.difficulty
     );
+    
     if (!validation.sucess)
       return new Validation(false, `Invalid block ${validation.message}`);
 

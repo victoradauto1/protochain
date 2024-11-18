@@ -6,6 +6,8 @@ import morgan from "morgan";
 import Block from "../lib/block";
 import Blockchain from "../lib/blockchain";
 import Transaction from "../lib/transaction";
+import Wallet from "../lib/wallet";
+import transactionOutput from "../lib/transactionOutput";
 
 const PORT: number = parseInt(process.env.BLOCKCHAIN_PORT || "3000");
 
@@ -13,10 +15,13 @@ const app: Application = express();
 
 /* c8 ignore start*/
 if (process.argv.includes("--run")) app.use(morgan("tiny"));
-app.use(express.json());
 /* c8 ignore stop*/
 
-const blockchain = new Blockchain();
+app.use(express.json());
+
+const wallet =  new Wallet(process.env.BLOCKCHAIN_WALLET);
+
+const blockchain = new Blockchain(wallet.publicKey);
 
 app.get("/status", (req: Request, res: Response, next: NextFunction) => {
   res.json({
@@ -83,10 +88,26 @@ app.post("/transactions", (req: Request, res: Response, next: NextFunction) => {
   else res.status(400).json(validation);
 });
 
+app.get("/wallets/:wallet", (req: Request, res: Response, next: NextFunction)=>{
+  const wallet =  req.params.wallet;
+
+  //TODO: faer versão final de UTXO;
+  return res.json({
+    balance: 10,
+    fee: blockchain.getFeePerTx(),
+    utxo: [new transactionOutput({
+      amount: 10,
+      toAddress: wallet,
+      tx: "abc"
+    } as transactionOutput)]
+  })
+
+})
+
 /* c8 ignore start */
 if (process.argv.includes("--run"))
   app.listen(PORT, () => {
-    console.log(`Blockchain is running at ${PORT}.`);
+    console.log(`Blockchain is running at ${PORT}. Wallet: ${wallet.publicKey}`);
   });
 /* c8 ignore stop */
 

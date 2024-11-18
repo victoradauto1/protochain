@@ -10,12 +10,14 @@ export default class TransactionInput {
   fromAddress: string;
   amount: number;
   signature: string;
+  previousTx: string;
 
   /**
    * Creates a new transactionInput
    * @param txInput The tx input data
    */
   constructor(txInput?: TransactionInput) {
+    this.previousTx = txInput?.previousTx || "";
     this.fromAddress = txInput?.fromAddress || "";
     this.amount = txInput?.amount || 0;
     this.signature = txInput?.signature || "";
@@ -37,7 +39,7 @@ export default class TransactionInput {
    * @returns The tx input hash
    */
   getHash(): string {
-    return SHA256(this.fromAddress + this.amount).toString();
+    return SHA256(this.previousTx + this.fromAddress + this.amount).toString();
   }
 
   /**
@@ -45,13 +47,18 @@ export default class TransactionInput {
    * @returns returns a validation input object
    */
   IsValid(): Validation {
-    if (!this.signature) return new Validation(false, "Signature is required.");
-    if(this.amount < 1) return new Validation(false, "Amount must be greater than zero.")
+    if (!this.previousTx || !this.signature)
+      return new Validation(false, "Signature and previous Tx are required.");
+    if (this.amount < 1)
+      return new Validation(false, "Amount must be greater than zero.");
 
-      const hash = Buffer.from(this.getHash(), "hex");
-      const isValid = ECPair.fromPublicKey(Buffer.from(this.fromAddress, "hex"))
-        .verify(hash, Buffer.from(this.signature, "hex"));
+    const hash = Buffer.from(this.getHash(), "hex");
+    const isValid = ECPair.fromPublicKey(
+      Buffer.from(this.fromAddress, "hex")
+    ).verify(hash, Buffer.from(this.signature, "hex"));
 
-    return isValid? new Validation() : new Validation(false, "Invalid tx Input signature.")
+    return isValid
+      ? new Validation()
+      : new Validation(false, "Invalid tx Input signature.");
   }
 }
