@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.62% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>88/93</span>
+                <span class='fraction'>95/114</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.62% </span>
+                <span class="strong">83.33% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>88/93</span>
+                <span class='fraction'>95/114</span>
             </div>
         
             
@@ -156,7 +156,33 @@
 <a name='L91'></a><a href='#L91'>91</a>
 <a name='L92'></a><a href='#L92'>92</a>
 <a name='L93'></a><a href='#L93'>93</a>
-<a name='L94'></a><a href='#L94'>94</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -240,6 +266,22 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -257,6 +299,8 @@ import morgan from "morgan";
 import Block from "../lib/block";
 import Blockchain from "../lib/blockchain";
 import Transaction from "../lib/transaction";
+import Wallet from "../lib/wallet";
+import transactionOutput from "../lib/transactionOutput";
 &nbsp;
 const PORT: number = parseInt(process.env.BLOCKCHAIN_PORT<span class="branch-0 cbranch-no" title="branch not covered" > || "3000")</span>;
 &nbsp;
@@ -264,10 +308,13 @@ const app: Application = express();
 &nbsp;
 /* c8 ignore start*/
 if (process.argv.includes("--run")) app.use(morgan("tiny"));
-app.use(express.json());
 /* c8 ignore stop*/
 &nbsp;
-const blockchain = new Blockchain();
+app.use(express.json());
+&nbsp;
+const wallet =  new Wallet(process.env.BLOCKCHAIN_WALLET);
+&nbsp;
+const blockchain = new Blockchain(wallet.publicKey);
 &nbsp;
 app.get("/status", (req: Request, res: Response, next: NextFunction) =&gt; {
   res.json({
@@ -334,10 +381,26 @@ app.post("/transactions", (req: Request, res: Response, next: NextFunction) =&gt
 <span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >  else res.status(400).json(validation);</span></span>
 });
 &nbsp;
+app.get("/wallets/:wallet", (req: Request, res: Response, next: NextFunction)=&gt;{
+<span class="cstat-no" title="statement not covered" >  const wallet =  req.params.wallet;</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >  //TODO: faer versão final de UTXO;</span>
+<span class="cstat-no" title="statement not covered" >  return res.json({</span>
+<span class="cstat-no" title="statement not covered" >    balance: 10,</span>
+<span class="cstat-no" title="statement not covered" >    fee: blockchain.getFeePerTx(),</span>
+<span class="cstat-no" title="statement not covered" >    utxo: [new transactionOutput({</span>
+<span class="cstat-no" title="statement not covered" >      amount: 10,</span>
+<span class="cstat-no" title="statement not covered" >      toAddress: wallet,</span>
+<span class="cstat-no" title="statement not covered" >      tx: "abc"</span>
+<span class="cstat-no" title="statement not covered" >    } as transactionOutput)]</span>
+<span class="cstat-no" title="statement not covered" >  })</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >})</span>
+&nbsp;
 /* c8 ignore start */
 if (process.argv.includes("--run"))
   app.listen(PORT, () =&gt; {
-    console.log(`Blockchain is running at ${PORT}.`);
+    console.log(`Blockchain is running at ${PORT}. Wallet: ${wallet.publicKey}`);
   });
 /* c8 ignore stop */
 &nbsp;
@@ -349,7 +412,7 @@ export { app };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-15T21:12:58.571Z
+                at 2024-11-20T00:24:15.056Z
             </div>
         <script src="../prettify.js"></script>
         <script>
