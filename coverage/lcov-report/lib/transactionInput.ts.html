@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.37% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>54/64</span>
+                <span class='fraction'>64/64</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">46.15% </span>
+                <span class="strong">70.58% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>6/13</span>
+                <span class='fraction'>12/17</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.37% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>54/64</span>
+                <span class='fraction'>64/64</span>
             </div>
         
             
@@ -146,50 +146,50 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import SHA256 from "crypto-js/sha256";
 import ECPairFactory from "ecpair";
@@ -240,18 +240,18 @@ export default class TransactionInput {
    * @returns returns a validation input object
    */
   IsValid(): Validation {
-    if (!this.previousTx<span class="branch-0 cbranch-no" title="branch not covered" > || !this.signature)</span>
+    if (!this.previousTx || !this.signature)
       return new Validation(false, "Signature and previous Tx are required.");
-<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >    if (this.amount &lt; 1)</span></span>
-<span class="cstat-no" title="statement not covered" >      return new Validation(false, "Amount must be greater than zero.");</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    const hash = Buffer.from(this.getHash(), "hex");</span>
-<span class="cstat-no" title="statement not covered" >    const isValid = ECPair.fromPublicKey(</span>
-<span class="cstat-no" title="statement not covered" >      Buffer.from(this.fromAddress, "hex")</span>
-<span class="cstat-no" title="statement not covered" >    ).verify(hash, Buffer.from(this.signature, "hex"));</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    return isValid</span>
-<span class="cstat-no" title="statement not covered" >      ? new Validation()</span>
+    if (this.amount &lt; 1)
+      return new Validation(false, "Amount must be greater than zero.");
+&nbsp;
+    const hash = Buffer.from(this.getHash(), "hex");
+    const isValid = ECPair.fromPublicKey(
+      Buffer.from(this.fromAddress, "hex")
+    ).verify(hash, Buffer.from(this.signature, "hex"));
+&nbsp;
+    return isValid
+      ? new Validation()
 <span class="branch-0 cbranch-no" title="branch not covered" >      : new Validation(false, "Invalid tx Input signature.");</span>
   }
 }
@@ -262,7 +262,7 @@ export default class TransactionInput {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-20T00:24:15.056Z
+                at 2024-11-20T19:58:04.903Z
             </div>
         <script src="../prettify.js"></script>
         <script>

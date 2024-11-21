@@ -20,4 +20,31 @@ describe("TransactionOutput tests", () => {
     const valid =  txOutput.isValid();
     expect(valid.sucess).toBeTruthy()
   });
+
+  test("2 - Should NOT be valid (default values -  fall back)", () => {
+    const txOutput = new transactionOutput();
+    const valid =  txOutput.isValid();
+    expect(valid.sucess).toBeFalsy()
+  });
+
+  test("3 - Should Not be valid", () => {
+    const txOutput = new transactionOutput({
+        amount: -10,
+        toAddress: alice.publicKey,
+        tx: "abc"
+    } as transactionOutput);
+
+    const valid =  txOutput.isValid();
+    expect(valid.sucess).toBeFalsy()
+  });
+
+  test("4 - Should get hash", () => {
+    const txOutput = new transactionOutput({
+        amount: 10,
+        toAddress: alice.publicKey,
+        tx: "abc"
+    } as transactionOutput);
+    const hash = txOutput.getHash();
+    expect(hash).toBeTruthy()
+  });
 });

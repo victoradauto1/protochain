@@ -28,7 +28,7 @@ beforeAll(() => {
 });
 
 describe("Block tests", () => {
-  // 1. Inicialização e Criação do Bloco
+
   test("1 - should create from blockInfo", () => {
     const block = Block.fromBlockInfo({
       transactions: [],
@@ -54,7 +54,6 @@ describe("Block tests", () => {
     expect(valid.sucess).toBeTruthy();
   });
 
-  // 2. Validação de Blocos
   test("2 - should be valid", () => {
     const block = new Block({
       index: 1,
@@ -77,7 +76,7 @@ describe("Block tests", () => {
     expect(valid.sucess).toBeTruthy();
   });
 
-  // 3. Casos Específicos de Validação
+ 
   test("3 - should NOT be valid (no fee)", () => {
     const block = new Block({
       index: 1,
@@ -118,30 +117,40 @@ describe("Block tests", () => {
     const block = new Block({
       index: 1,
       previousHash: genesis.hash,
-      transactions: [new Transaction({} as Transaction)],
+      transactions: [] as Transaction[],
     } as Block);
     block.transactions.push(new Transaction({
       type: TransactionType.FEE,
-      txOutputs: [new transactionOutput()]
+      timestamp: -1,
+      txOutputs: [new transactionOutput({
+        toAddress: alice.publicKey,
+        amount:1
+      } as transactionOutput)]
     } as Transaction))
 
     block.hash = block.getHash();
     block.mine(exampleDifficulty, alice.publicKey);
-    block.transactions[0].txOutputs[0].toAddress = "";
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();
   });
 
-  // Mais testes específicos, na ordem de lógica (hash inválido, índice, etc.)
-  test("6 - should be NOT valid(index)", () => {
+  test("6 - should be NOT valid (Invalid index)", () => {
     const block = new Block({
       index: -1,
-      transactions: [
-        new Transaction({
-          txInputs: [new TransactionInput()],
-        } as Transaction),
-      ],
+      transactions: [] as Transaction[],
     } as Block);
+
+    block.transactions.push(new Transaction({
+      type: TransactionType.FEE,
+      txOutputs: [new transactionOutput({
+        toAddress: alice.publicKey,
+        amount: 1
+      } as transactionOutput)]
+    } as Transaction));
+
+    block.hash = block.getHash();
+    block.mine(exampleDifficulty, alice.publicKey);
+
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();
   });
@@ -149,23 +158,21 @@ describe("Block tests", () => {
   test("7 - should be NOT valid (block not mined)", () => {
     const block = new Block({
       index: 1,
+      nonce: 0,
       previousHash: genesis.hash,
-      transactions: [
-        new Transaction({
-          txInputs: [new TransactionInput()],
-        } as Transaction),
-      ],
+      transactions: [] as Transaction[],
     } as Block);
+
     block.transactions.push(new Transaction({
       type: TransactionType.FEE,
-      txOutputs: [new transactionOutput()]
+      txOutputs: [new transactionOutput({
+        toAddress: alice.publicKey,
+        amount: 1
+      } as transactionOutput)]
     } as Transaction))
 
     block.hash = block.getHash();
-
-    block.previousHash = genesis.hash; // Previous hash correto
-    block.nonce = 0; // Nonce inválido
-    block.miner = ""; // Miner inválido
+    block.previousHash = genesis.hash; 
 
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();
@@ -192,5 +199,73 @@ describe("Block tests", () => {
     expect(valid.message).toBe("Invalid hash");
   });
 
-  // Continuar com os outros testes na sequência lógica...
+  test("9 - should be NOT valid (invalid previousHash)", () => {
+    const block = new Block({
+      index: 1,
+      previousHash: genesis.hash,
+      transactions: [] as Transaction[],
+    } as Block);
+
+    block.transactions.push(new Transaction({
+      type: TransactionType.FEE,
+      txOutputs:[new transactionOutput({
+        toAddress: alice.publicKey,
+        amount: 1
+      } as transactionOutput)]
+    } as Transaction))
+   
+    block.hash = block.getHash();
+    block.mine(exampleDifficulty, alice.publicKey);
+
+    const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
+    expect(valid.sucess).toBeFalsy();
+  });
+
+  test("10 - should be NOT valid (invalid timestamp)", () => {
+    const block = new Block({
+      index: 1,
+      previousHash: genesis.hash,
+      transactions: [] as Transaction[],
+    } as Block);
+
+    block.timestamp = -1;
+
+    block.transactions.push(new Transaction({
+      type: TransactionType.FEE,
+      txOutputs:[new transactionOutput({
+        toAddress: alice.publicKey,
+        amount: 1
+      } as transactionOutput)]
+    } as Transaction))
+   
+    block.hash = block.getHash();
+    block.mine(exampleDifficulty, alice.publicKey);
+
+    const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
+    expect(valid.sucess).toBeFalsy();
+  });
+
+  test("11 - should NOT be valid (different hash)", () => {
+    const block = new Block({
+      index: 1,
+      previousHash: genesis.hash,
+      transactions: [] as Transaction[],
+    } as Block);
+
+    block.transactions.push(new Transaction({
+      type: TransactionType.FEE,
+      txOutputs: [new transactionOutput({
+        toAddress: alice.publicKey,
+        amount: 1
+      } as transactionOutput)]
+    } as Transaction))
+
+    block.hash = block.getHash();
+    block.mine(exampleDifficulty, alice.publicKey);
+
+    block.hash = 'abc';
+
+    const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
+    expect(valid.sucess).toBeFalsy();
+  });
 });

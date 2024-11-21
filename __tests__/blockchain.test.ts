@@ -4,6 +4,8 @@ import Blockchain from "../src/lib/blockchain";
 import Transaction from "../src/lib/transaction";
 import TransactionInput from "../src/lib/transactionInput";
 import Wallet from "../src/lib/wallet";
+import TransactionType from "../src/lib/transactionType";
+import transactionOutput from "../src/lib/transactionOutput";
 
 jest.mock("../src/lib/block");
 jest.mock("../src/lib/transaction");
@@ -201,25 +203,47 @@ describe("Blockchain tests", () => {
     } as Block);
 
     const result = blockchain.addBlock(block);
-    expect(result.sucess).toBeFalsy();
+    expect(result.sucess).toBeTruthy();
   });
-  
 
-  test("should NOT add block", () => {
+  test("should NOT add block (Invalid mempool)", () => {
     const blockchain = new Blockchain(alice.publicKey);
+    blockchain.mempool.push(new Transaction());
+    blockchain.mempool.push(new Transaction());
+   
     const tx = new Transaction({
       txInputs: [new TransactionInput()],
     } as Transaction);
 
-    blockchain.mempool.push(tx);
-
-    const block = new Block({
+    const result = blockchain.addBlock(new Block({
       index: 1,
       previousHash: blockchain.blocks[0].hash,
-      transactions: [tx],
+      transactions: [tx]
+    } as Block));
+
+    expect(result.sucess).toBeFalsy();
+  });
+  
+
+  test("should NOT add block (Invalid index)", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    blockchain.mempool.push(new Transaction())
+    const block = new Block({
+      index: -1,
+      previousHash: blockchain.blocks[0].hash,
     } as Block);
+
+    block.transactions.push(new Transaction({
+      type: TransactionType.FEE,
+      txOutputs:[new transactionOutput({
+        toAddress: alice.publicKey,
+        amount: 1
+      } as transactionOutput)]
+    } as Transaction));
+
+    block.hash = block.getHash();
+
     const result = blockchain.addBlock(block);
-    console.log(result);
     expect(result.sucess).toBeFalsy();
   });
 
