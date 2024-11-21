@@ -1,7 +1,8 @@
 import Block from "./block";
 import BlockInfo from "./blockInfo";
 import Transaction from "./transaction";
-import transactionOutput from "./transactionOutput";
+import TransactionInput from "./transactionInput";
+import TransactionOutput from "./transactionOutput";
 import TransactionSearch from "./transactionSearch";
 import TransactionType from "./transactionType";
 import Validation from "./validation";
@@ -39,10 +40,10 @@ export default class Blockchain {
     const tx = new Transaction({
       type: TransactionType.FEE,
       txOutputs: [
-        new transactionOutput({
+        new TransactionOutput({
           amount,
           toAddress: miner,
-        } as transactionOutput),
+        } as TransactionOutput),
       ],
     } as Transaction);
 
@@ -80,8 +81,15 @@ export default class Blockchain {
         return new Validation(false, "This wallet has a pending transaction.");
       }
 
-      //TODO: Validar a origem dos fundos (VTXO)
+      const utxo = this.getUtxo(from);
+      for(let i = 0; i < transaction.txInputs.length; i++){
+        const txi = transaction.txInputs[i];
+        if(utxo.findIndex(txo => txo.tx === txi.previousTx && txo.amount >= txi.amount)=== -1)
+          return new Validation(false, "Invalid Tx: the TXO is already spent or unexistent.");
+      }
     }
+
+    //TODO: fazer versão final que valide as taxas
 
     const validation = transaction.isValid();
     if (!validation.sucess)
@@ -205,5 +213,53 @@ export default class Blockchain {
       feePerTx,
       maxDifficulty,
     } as BlockInfo;
-  }
+  };
+
+  getTxInputs(wallet: string): (TransactionInput | undefined)[]{
+    return this.blocks
+      .map(b => b.transactions)
+      .flat()
+      .filter(tx => tx.txInputs && tx.txInputs.length)
+      .map(tx => tx.txInputs)
+      .flat()
+      .filter(txi => txi!.fromAddress === wallet);
+  };
+
+  getTxOutputs(wallet: string): TransactionOutput[] {
+    return this.blocks
+      .map(b => b.transactions)
+      .flat()
+      .filter(tx => tx.txOutputs && tx.txOutputs.length)
+      .map(tx => tx.txOutputs)
+      .flat()
+      .filter(txo => txo!.toAddress === wallet);
+  };
+
+  getUtxo(wallet: string) : TransactionOutput[]{
+    const txIns = this.getTxInputs(wallet);
+    const txOuts = this.getTxOutputs(wallet);
+
+    if(!txIns || !txIns.length) return txOuts;
+
+    txIns.forEach(txi =>{
+      const index = txOuts.findIndex( txo => txo.amount === txi!.amount);
+      txOuts.splice(index, 1)
+    });
+
+    return txOuts;
+
+  };
+
+  getBalance(wallet: string): number{
+    const utxo =  this.getUtxo(wallet);
+    if(!utxo || !utxo.length)
+      return 0;
+
+    return utxo.reduce((a, b) => a + b.amount, 0 )
+  };
+
+  static getRewardAmount(difficulty: number): number{
+    return (64 - difficulty)*10;
+  };
+
 }

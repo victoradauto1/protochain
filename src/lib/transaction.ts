@@ -3,6 +3,7 @@ import TransactionInput from "./transactionInput";
 import transactionOutput from "./transactionOutput";
 import TransactionType from "./transactionType";
 import Validation from "./validation";
+import Blockchain from "./blockchain";
 
 /**
  * Transaction Class
@@ -45,7 +46,7 @@ export default class Transaction {
     return sha256(this.type + from + to + this.timestamp).toString();
   }
 
-  isValid(): Validation {
+  isValid(difficulty: number, totalFees: number): Validation {
     if (this.hash !== this.getHash())
       return new Validation(false, "Invalid hash.");
     if (!this.txOutputs || !this.txOutputs.length || this.txOutputs.map( txo => txo.isValid()).some(v => !v.sucess)) return new Validation(false, "Invalid TXO.");
@@ -62,7 +63,12 @@ export default class Transaction {
 
     if(this.txOutputs.some(txo => txo.tx !== this.hash)) return new Validation(false, "Invalid TXO reference hash.");
 
-    // TODO: validar taxas e recompensas quando tx.type === FEE.
+    if(this.type === TransactionType.FEE){
+      const txo = this.txOutputs[0];
+      if(txo.amount > Blockchain.getRewardAmount(difficulty)+ totalFees)
+        return new Validation(false, "invalid tx reward.")
+    };
+
     return new Validation();
   }
 }

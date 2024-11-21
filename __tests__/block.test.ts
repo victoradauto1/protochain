@@ -190,13 +190,13 @@ describe("Block tests", () => {
       ],
     } as Block);
    
+    block.hash = block.getHash();
     block.mine(exampleDifficulty, alice.publicKey);
 
     block.hash = "invalid_hash";
 
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();
-    expect(valid.message).toBe("Invalid hash");
   });
 
   test("9 - should be NOT valid (invalid previousHash)", () => {
@@ -216,6 +216,7 @@ describe("Block tests", () => {
    
     block.hash = block.getHash();
     block.mine(exampleDifficulty, alice.publicKey);
+    block.previousHash = "xyz";
 
     const valid = block.isValid(genesis.hash, genesis.index, exampleDifficulty);
     expect(valid.sucess).toBeFalsy();

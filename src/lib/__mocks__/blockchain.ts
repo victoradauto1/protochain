@@ -4,6 +4,7 @@ import BlockInfo from "../blockInfo";
 import Transaction from "./transaction";
 import TransactionSearch from "../transactionSearch";
 import TransactionInput from "./transactionInput";
+import TransactionOutput from "./transactionOutput";
 
 /**
  * Mocked blockchain class
@@ -60,22 +61,6 @@ export default class Blockchain {
     return this.blocks.find((b) => b.hash === hash);
   }
  
-  getFeePerTx(): number {
-    return 1;
-  }
-
-  getNextBlock(): BlockInfo {
-   
-    return {
-      transactions: this.mempool.slice(0,2),
-      difficulty: 1,
-      previousHash: this.getLastBlock().hash,
-      index: this.blocks.length,
-      feePerTx: this.getFeePerTx() ,
-      maxDifficulty: 62,
-    } as BlockInfo;
-  }
-
   addTransaction(transaction: Transaction): Validation {
     const validation = transaction.isValid();
     if(!validation.sucess) return validation;
@@ -105,4 +90,49 @@ export default class Blockchain {
     // For the mock, let's just return a valid Validation
     return new Validation(true);
   }
+
+  
+  getFeePerTx(): number {
+    return 1;
+  }
+
+  getNextBlock(): BlockInfo {
+   
+    return {
+      transactions: this.mempool.slice(0,2),
+      difficulty: 2,
+      previousHash: this.getLastBlock().hash,
+      index: this.blocks.length,
+      feePerTx: this.getFeePerTx() ,
+      maxDifficulty: 62,
+    } as BlockInfo;
+  };
+
+  getTxInputs(wallet: string): (TransactionInput | undefined)[]{
+    return [new TransactionInput({
+      amount: 10,
+      fromAddress: wallet,
+      previousTx: "abc",
+      signature: "abc"
+    } as TransactionInput)]
+  };
+
+  getTxOutputs(wallet: string): TransactionOutput[] {
+    return [new TransactionOutput({
+      amount: 10,
+      toAddress: wallet,
+      tx: "abc"
+    } as TransactionOutput)]
+  };
+
+  getUtxo(wallet: string) : TransactionOutput[]{
+    return this.getTxOutputs(wallet);
+  };
+
+  getBalance(wallet: string): number{
+    return 10;
+  }
+
+
+
 }
