@@ -35,17 +35,12 @@ export default class Blockchain {
    * Creates a Genesis Block
    */
   createGenesis(miner: string): Block {
-    const amount = 10; //TODO: Calcular a recompensa;
+    const amount = Blockchain.getRewardAmount(this.getDifficulty());
 
-    const tx = new Transaction({
-      type: TransactionType.FEE,
-      txOutputs: [
-        new TransactionOutput({
-          amount,
-          toAddress: miner,
-        } as TransactionOutput),
-      ],
-    } as Transaction);
+    const tx = Transaction.fromReward(new TransactionOutput({
+      amount,
+      toAddress: miner,
+    } as TransactionOutput));
 
     tx.hash = tx.getHash();
     tx.txOutputs[0].tx = tx.hash;
@@ -82,16 +77,24 @@ export default class Blockchain {
       }
 
       const utxo = this.getUtxo(from);
-      for(let i = 0; i < transaction.txInputs.length; i++){
+      for (let i = 0; i < transaction.txInputs.length; i++) {
         const txi = transaction.txInputs[i];
-        if(utxo.findIndex(txo => txo.tx === txi.previousTx && txo.amount >= txi.amount)=== -1)
-          return new Validation(false, "Invalid Tx: the TXO is already spent or unexistent.");
+        if (
+          utxo.findIndex(
+            (txo) => txo.tx === txi.previousTx && txo.amount >= txi.amount
+          ) === -1
+        )
+          return new Validation(
+            false,
+            "Invalid Tx: the TXO is already spent or unexistent."
+          );
       }
     }
 
-    //TODO: fazer versão final que valide as taxas
-
-    const validation = transaction.isValid();
+    const validation = transaction.isValid(
+      this.getDifficulty(),
+      this.getFeePerTx()
+    );
     if (!validation.sucess)
       return new Validation(false, "Invalid tx " + validation.message);
 
@@ -113,14 +116,15 @@ export default class Blockchain {
    */
   addBlock(block: Block): Validation {
     const nextBlock = this.getNextBlock();
-    if(!nextBlock) return new Validation(false, "There´s no next block info.");
+    if (!nextBlock) return new Validation(false, "There´s no next block info.");
 
     const validation = block.isValid(
       nextBlock.previousHash,
       nextBlock.index - 1,
-      nextBlock.difficulty
+      nextBlock.difficulty,
+      nextBlock.feePerTx
     );
-    
+
     if (!validation.sucess)
       return new Validation(false, `Invalid block ${validation.message}`);
 
@@ -179,7 +183,8 @@ export default class Blockchain {
       const validation = currentBlock.isValid(
         previousBlock.hash,
         previousBlock.index,
-        this.getDifficulty()
+        this.getDifficulty(),
+        this.getFeePerTx()
       );
       if (!validation.sucess)
         return new Validation(
@@ -213,53 +218,50 @@ export default class Blockchain {
       feePerTx,
       maxDifficulty,
     } as BlockInfo;
-  };
+  }
 
-  getTxInputs(wallet: string): (TransactionInput | undefined)[]{
+  getTxInputs(wallet: string): (TransactionInput | undefined)[] {
     return this.blocks
-      .map(b => b.transactions)
+      .map((b) => b.transactions)
       .flat()
-      .filter(tx => tx.txInputs && tx.txInputs.length)
-      .map(tx => tx.txInputs)
+      .filter((tx) => tx.txInputs && tx.txInputs.length)
+      .map((tx) => tx.txInputs)
       .flat()
-      .filter(txi => txi!.fromAddress === wallet);
-  };
+      .filter((txi) => txi!.fromAddress === wallet);
+  }
 
   getTxOutputs(wallet: string): TransactionOutput[] {
     return this.blocks
-      .map(b => b.transactions)
+      .map((b) => b.transactions)
       .flat()
-      .filter(tx => tx.txOutputs && tx.txOutputs.length)
-      .map(tx => tx.txOutputs)
+      .filter((tx) => tx.txOutputs && tx.txOutputs.length)
+      .map((tx) => tx.txOutputs)
       .flat()
-      .filter(txo => txo!.toAddress === wallet);
-  };
+      .filter((txo) => txo!.toAddress === wallet);
+  }
 
-  getUtxo(wallet: string) : TransactionOutput[]{
+  getUtxo(wallet: string): TransactionOutput[] {
     const txIns = this.getTxInputs(wallet);
     const txOuts = this.getTxOutputs(wallet);
 
-    if(!txIns || !txIns.length) return txOuts;
+    if (!txIns || !txIns.length) return txOuts;
 
-    txIns.forEach(txi =>{
-      const index = txOuts.findIndex( txo => txo.amount === txi!.amount);
-      txOuts.splice(index, 1)
+    txIns.forEach((txi) => {
+      const index = txOuts.findIndex((txo) => txo.amount === txi!.amount);
+      txOuts.splice(index, 1);
     });
 
     return txOuts;
+  }
 
-  };
+  getBalance(wallet: string): number {
+    const utxo = this.getUtxo(wallet);
+    if (!utxo || !utxo.length) return 0;
 
-  getBalance(wallet: string): number{
-    const utxo =  this.getUtxo(wallet);
-    if(!utxo || !utxo.length)
-      return 0;
+    return utxo.reduce((a, b) => a + b.amount, 0);
+  }
 
-    return utxo.reduce((a, b) => a + b.amount, 0 )
-  };
-
-  static getRewardAmount(difficulty: number): number{
-    return (64 - difficulty)*10;
-  };
-
+  static getRewardAmount(difficulty: number): number {
+    return (64 - difficulty) * 10;
+  }
 }

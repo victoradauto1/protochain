@@ -62,7 +62,7 @@ export default class Blockchain {
   }
  
   addTransaction(transaction: Transaction): Validation {
-    const validation = transaction.isValid();
+    const validation = transaction.isValid(1, 10);
     if(!validation.sucess) return validation;
     this.mempool.push(transaction)
     return new Validation();

@@ -44,7 +44,22 @@ export default class Transaction {
         : "";
 
     return sha256(this.type + from + to + this.timestamp).toString();
-  }
+  };
+
+  getFee(): number {
+    let inputSum: number = 0, outSum: number = 0;
+    if(this.txInputs && this.txInputs.length){
+      inputSum = this.txInputs.map( txi => txi.amount).reduce((a, b)=> a + b);
+
+      if(this.txOutputs && this.txOutputs.length){
+        outSum = this.txOutputs.map( txo => txo.amount).reduce((a,b)=> a+b)
+      };
+
+      return inputSum -  outSum; 
+    };
+
+    return 0;
+  };
 
   isValid(difficulty: number, totalFees: number): Validation {
     if (this.hash !== this.getHash())
@@ -70,5 +85,16 @@ export default class Transaction {
     };
 
     return new Validation();
-  }
-}
+  };
+
+  static fromReward(txo: transactionOutput): Transaction{
+   const tx =  new Transaction({
+    type: TransactionType.FEE,
+    txOutputs: [txo]
+   } as Transaction);
+
+   tx.hash = tx.getHash();
+   tx.txOutputs[0].tx = tx.hash;
+   return tx;
+  };
+};

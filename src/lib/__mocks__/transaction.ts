@@ -23,11 +23,23 @@ export default class Transaction {
 
   getHash(): string {
     return "abc";
-  }
+  };
 
   isValid(difficulty: number , totalFees: number): Validation {
     if (this.timestamp < 1 || !this.hash || !difficulty || !totalFees)
       return new Validation(false, "Invalid Mock Transaction.");
     return new Validation();
-  }
+  };
+
+  static fromReward(txo: transactionOutput): Transaction{
+    const tx =  new Transaction({
+     type: TransactionType.FEE,
+     txOutputs: [txo]
+    } as Transaction);
+ 
+    tx.txInputs = undefined;
+    tx.hash = tx.getHash();
+    tx.txOutputs[0].tx = tx.hash;
+    return tx;
+   };
 }
