@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.33% </span>
+                <span class="strong">95.57% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>95/114</span>
+                <span class='fraction'>108/113</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">77.27% </span>
+                <span class="strong">78.26% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>17/22</span>
+                <span class='fraction'>18/23</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">83.33% </span>
+                <span class="strong">95.57% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>95/114</span>
+                <span class='fraction'>108/113</span>
             </div>
         
             
@@ -176,8 +176,7 @@
 <a name='L111'></a><a href='#L111'>111</a>
 <a name='L112'></a><a href='#L112'>112</a>
 <a name='L113'></a><a href='#L113'>113</a>
-<a name='L114'></a><a href='#L114'>114</a>
-<a name='L115'></a><a href='#L115'>115</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L114'></a><a href='#L114'>114</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -268,20 +267,19 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -382,20 +380,19 @@ app.post("/transactions", (req: Request, res: Response, next: NextFunction) =&gt
 });
 &nbsp;
 app.get("/wallets/:wallet", (req: Request, res: Response, next: NextFunction)=&gt;{
-<span class="cstat-no" title="statement not covered" >  const wallet =  req.params.wallet;</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >  //TODO: faer versão final de UTXO;</span>
-<span class="cstat-no" title="statement not covered" >  return res.json({</span>
-<span class="cstat-no" title="statement not covered" >    balance: 10,</span>
-<span class="cstat-no" title="statement not covered" >    fee: blockchain.getFeePerTx(),</span>
-<span class="cstat-no" title="statement not covered" >    utxo: [new transactionOutput({</span>
-<span class="cstat-no" title="statement not covered" >      amount: 10,</span>
-<span class="cstat-no" title="statement not covered" >      toAddress: wallet,</span>
-<span class="cstat-no" title="statement not covered" >      tx: "abc"</span>
-<span class="cstat-no" title="statement not covered" >    } as transactionOutput)]</span>
-<span class="cstat-no" title="statement not covered" >  })</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >})</span>
+  const wallet =  req.params.wallet;
+&nbsp;
+  const utxo =  blockchain.getUtxo(wallet);
+  const balance =  blockchain.getBalance(wallet);
+  const fee = blockchain.getFeePerTx()
+&nbsp;
+  return res.json({
+    balance,
+    fee,
+    utxo
+  })
+&nbsp;
+})
 &nbsp;
 /* c8 ignore start */
 if (process.argv.includes("--run"))
@@ -412,7 +409,7 @@ export { app };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-11-21T01:11:22.509Z
+                at 2024-11-24T23:30:39.005Z
             </div>
         <script src="../prettify.js"></script>
         <script>

@@ -1,10 +1,13 @@
 import TransactionInput from "../src/lib/transactionInput";
+import transactionOutput from "../src/lib/transactionOutput";
 import Wallet from "../src/lib/wallet";
 
 describe("Wallet tests", () => {
 
     let alice: Wallet;
     let bob: Wallet;
+    const exampleTx: string =
+    "4885d8f8ee0452d2d97a475028c124e13e8b1e716545857e8b0bd72f70fbe2ea";
 
     beforeAll(()=>{
         alice = new Wallet();
@@ -56,4 +59,18 @@ describe("Wallet tests", () => {
     txInput.sign(alice.privateKey);
     expect(txInput.IsValid().sucess).toBeFalsy();
   });
+
+  test("Should create from TXO", ()=>{
+    const txi = TransactionInput.fromTxo({
+      amount:10,
+      toAddress: alice.publicKey,
+      tx: exampleTx
+    } as transactionOutput);
+    txi.sign(alice.privateKey);
+
+    txi.amount = 11;
+    const result  = txi.IsValid();
+    expect(result.sucess).toBeFalsy();
+  });
+
 });

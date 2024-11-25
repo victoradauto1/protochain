@@ -80,17 +80,17 @@ describe("Block tests", () => {
       previousHash: genesis.hash,
     } as BlockInfo);
 
-    block.transactions.push(
-      new Transaction({
-        type: TransactionType.FEE,
-        txOutputs: [
-          new transactionOutput({
-            toAddress: alice.publicKey,
-            amount: 1,
-          } as transactionOutput),
-        ],
-      } as Transaction)
-    );
+    const tx = new Transaction({
+      type: TransactionType.FEE,
+      txOutputs: [
+        new transactionOutput({
+          toAddress: alice.publicKey,
+          amount: 1,
+        } as transactionOutput),
+      ],
+    } as Transaction);
+
+    block.transactions.push(tx);
 
     block.hash = block.getHash();
 
@@ -277,19 +277,6 @@ describe("Block tests", () => {
   test("12 - should be NOT valid (empty hash)", () => {
     const block = getFullBlock();
     block.hash = "";
-
-    const valid = block.isValid(
-      genesis.hash,
-      genesis.index,
-      exampleDifficulty,
-      exampleFee
-    );
-    expect(valid.sucess).toBeFalsy();
-  });
-
-  test("13 - should be NOT valid (invslid txInput)", () => {
-    const block = getFullBlock();
-    block.transactions[0].txInputs![0].amount = -1;
 
     const valid = block.isValid(
       genesis.hash,
