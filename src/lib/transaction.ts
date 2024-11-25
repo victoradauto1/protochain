@@ -72,7 +72,7 @@ export default class Transaction {
         return new Validation(false, `Invalid tx: ${message}`)};
     
       const inputSum = this.txInputs.map( txi => txi.amount).reduce((a,b) => a+b, 0);
-      const outputSum = this.txInputs.map( txo => txo.amount).reduce((a,b) => a+b, 0);
+      const outputSum = this.txOutputs.map( txo => txo.amount).reduce((a,b) => a+b, 0);
       if(inputSum < outputSum) return new Validation(false, "invalid tx: input must be equal or greater than output amount.")
     }
 

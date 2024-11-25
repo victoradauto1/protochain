@@ -286,4 +286,21 @@ describe("Block tests", () => {
     );
     expect(valid.sucess).toBeFalsy();
   });
+
+  test("13 - should be NOT valid (Invalid fee tx: Different from miner)", () => {
+    const block = getFullBlock();
+    const feeTx = block.transactions.find(tx => tx.type === TransactionType.FEE);
+    if (feeTx) {
+      feeTx.txOutputs[0].toAddress = bob.publicKey;
+    }
+  
+    const valid = block.isValid(
+      genesis.hash,
+      genesis.index,
+      exampleDifficulty,
+      exampleFee
+    );
+    expect(valid.sucess).toBeFalsy();
+    expect(valid.message).toBe("Invalid fee tx: Different from miner.")
+  });
 });
