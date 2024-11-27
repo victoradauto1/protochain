@@ -194,4 +194,62 @@ describe("Blockchain tests", () => {
     expect(validation.sucess).toBeFalsy();
     expect(validation.message).toBe("Invalid Tx: the TXO is already spent or unexistent.")
   });
+
+  test("9. should NOT add transaction (duplicated tx)", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+   
+    const tx = new Transaction();
+    tx.txInputs = [
+      new TransactionInput({
+        amount: 10,
+        previousTx: "abc",
+        fromAddress: alice.publicKey,
+        signature: "abc",
+      } as TransactionInput),
+    ];
+
+    tx.txOutputs = [
+      new transactionOutput({
+        amount: 10,
+        toAddress: "zyz",
+      } as transactionOutput),
+    ];
+
+    tx.hash = tx.getHash();
+
+    blockchain.addTransaction(tx);
+    const validation = blockchain.addTransaction(tx);
+    expect(validation.sucess).toBeFalsy();
+    expect(validation.message).toBe("Duplicate tx in blockchain")
+  });
+
+  test("9. should NOT add transaction (duplicated tx)", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+   
+    const tx = new Transaction();
+    tx.txInputs = [
+      new TransactionInput({
+        amount: 10,
+        previousTx: "abc",
+        fromAddress: alice.publicKey,
+        signature: "abc",
+      } as TransactionInput),
+    ];
+
+    tx.txOutputs = [
+      new transactionOutput({
+        amount: 10,
+        toAddress: "zyz",
+      } as transactionOutput),
+    ];
+
+    tx.hash = tx.getHash();
+
+    blockchain.addTransaction(tx);
+    const validation = blockchain.addTransaction(tx);
+    expect(validation.sucess).toBeFalsy();
+    expect(validation.message).toBe("Duplicate tx in blockchain")
+  });
+
+
 });
