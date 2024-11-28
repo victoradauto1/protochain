@@ -251,5 +251,86 @@ describe("Blockchain tests", () => {
     expect(validation.message).toBe("Duplicate tx in blockchain")
   });
 
+  // Teste do método getBlock
+  test("10. Sould get block by hash", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    const genesisBlock = blockchain.blocks[0];
+    
+    const foundBlock = blockchain.getBlock(genesisBlock.hash);
+    expect(foundBlock).toEqual(genesisBlock);
+    
+    const unexistent = blockchain.getBlock("unexistent");
+    expect(unexistent).toBeUndefined();
+  });
+
+  // Teste do método getTransaction na mempool
+  test("11.Should get a tx in mempool", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    const tx = new Transaction();
+    tx.hash = "tx-mempool";
+    
+    blockchain.mempool.push(tx);
+    const result = blockchain.getTransaction(tx.hash);
+    
+    expect(result.mempoolIndex).toBeGreaterThanOrEqual(0);
+    expect(result.transaction).toEqual(tx);
+  });
+
+  // Teste do método getTransaction em bloco
+  test("12.Should get a transaction in block", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    const txGenesis = blockchain.blocks[0].transactions[0];
+    
+    const result = blockchain.getTransaction(txGenesis.hash);
+    
+    expect(result.blockIndex).toBe(0);
+    expect(result.transaction).toEqual(txGenesis);
+  });
+
+  // // Teste de transação não encontrada
+  // test("deve retornar índices -1 para transação não encontrada", () => {
+  //   const blockchain = new Blockchain(alice.publicKey);
+  //   const resultado = blockchain.getTransaction("hash-inexistente");
+    
+  //   expect(resultado.blockIndex).toBe(-1);
+  //   expect(resultado.mempoolIndex).toBe(-1);
+  //   expect(resultado.transaction).toBeNull();
+  // });
+
+  // // Teste do método getNextBlock
+  // test("deve retornar null quando mempool vazia", () => {
+  //   const blockchain = new Blockchain(alice.publicKey);
+  //   blockchain.mempool = [];
+    
+  //   const resultado = blockchain.getNextBlock();
+  //   expect(resultado).toBeNull();
+  // });
+
+  // // Teste de obtenção do UTXO
+  // test("deve retornar UTXO correto da carteira", () => {
+  //   const blockchain = new Blockchain(alice.publicKey);
+  //   const utxo = blockchain.getUtxo(alice.publicKey);
+    
+  //   expect(utxo).toHaveLength(1); // Genesis block reward
+  //   expect(utxo[0].toAddress).toBe(alice.publicKey);
+  // });
+
+  // // Teste de cálculo de saldo
+  // test("deve calcular saldo corretamente", () => {
+  //   const blockchain = new Blockchain(alice.publicKey);
+  //   const saldo = blockchain.getBalance(alice.publicKey);
+  //   const recompensa = Blockchain.getRewardAmount(blockchain.getDifficulty());
+    
+  //   expect(saldo).toBe(recompensa);
+  //   expect(blockchain.getBalance(bob.publicKey)).toBe(0);
+  // });
+
+  // // Teste de cálculo de recompensa
+  // test("deve calcular recompensa corretamente", () => {
+  //   const dificuldade = 5;
+  //   const recompensa = Blockchain.getRewardAmount(dificuldade);
+    
+  //   expect(recompensa).toBe((64 - dificuldade) * 10);
+  // });
 
 });
