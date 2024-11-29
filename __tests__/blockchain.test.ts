@@ -4,7 +4,6 @@ import Blockchain from "../src/lib/blockchain";
 import Transaction from "../src/lib/transaction";
 import TransactionInput from "../src/lib/transactionInput";
 import transactionOutput from "../src/lib/transactionOutput";
-import TransactionType from "../src/lib/transactionType";
 import Wallet from "../src/lib/wallet";
 
 jest.mock("../src/lib/block");
@@ -133,10 +132,12 @@ describe("Blockchain tests", () => {
       } as TransactionInput),
     ];
 
-    tx.txOutputs = [new transactionOutput({
-      amount: 10,
-      toAddress: 'abc'
-    } as transactionOutput)];
+    tx.txOutputs = [
+      new transactionOutput({
+        amount: 10,
+        toAddress: "abc",
+      } as transactionOutput),
+    ];
 
     const validation = blockchain.addTransaction(tx);
     expect(validation.sucess).toBeFalsy();
@@ -158,46 +159,51 @@ describe("Blockchain tests", () => {
       } as TransactionInput),
     ];
 
-    tx.txOutputs = [new transactionOutput({
-      amount: 10,
-      toAddress: 'abc'
-    } as transactionOutput)];
+    tx.txOutputs = [
+      new transactionOutput({
+        amount: 10,
+        toAddress: "abc",
+      } as transactionOutput),
+    ];
 
     blockchain.mempool.push(tx);
 
     const validation = blockchain.addTransaction(tx);
     expect(validation.sucess).toBeFalsy();
-    expect(validation.message).toBe("This wallet has a pending transaction.")
+    expect(validation.message).toBe("This wallet has a pending transaction.");
   });
 
   // 8. Verifica se NÃO adiciona uma transação (UTXO já gasto ou inexistente)
   test("8. should NOT add transaction (spent UTXO or non-existent)", () => {
     const blockchain = new Blockchain(alice.publicKey);
- 
+
     const tx = new Transaction();
     tx.hash = "tx";
 
-    tx.txInputs = [new TransactionInput(
-      {
-        previousTx: "nonexistent-tx-id", 
+    tx.txInputs = [
+      new TransactionInput({
+        previousTx: "nonexistent-tx-id",
         amount: 10,
-      }as TransactionInput
-    )];
+      } as TransactionInput),
+    ];
 
-    tx.txOutputs = [new transactionOutput({
-      amount: 10,
-      toAddress: 'abc'
-    } as transactionOutput)];
-
+    tx.txOutputs = [
+      new transactionOutput({
+        amount: 10,
+        toAddress: "abc",
+      } as transactionOutput),
+    ];
 
     const validation = blockchain.addTransaction(tx);
     expect(validation.sucess).toBeFalsy();
-    expect(validation.message).toBe("Invalid Tx: the TXO is already spent or unexistent.")
+    expect(validation.message).toBe(
+      "Invalid Tx: the TXO is already spent or unexistent."
+    );
   });
 
   test("9. should NOT add transaction (duplicated tx)", () => {
     const blockchain = new Blockchain(alice.publicKey);
-   
+
     const tx = new Transaction();
     tx.txInputs = [
       new TransactionInput({
@@ -220,12 +226,12 @@ describe("Blockchain tests", () => {
     blockchain.addTransaction(tx);
     const validation = blockchain.addTransaction(tx);
     expect(validation.sucess).toBeFalsy();
-    expect(validation.message).toBe("Duplicate tx in blockchain")
+    expect(validation.message).toBe("Duplicate tx in blockchain");
   });
 
   test("9. should NOT add transaction (duplicated tx)", () => {
     const blockchain = new Blockchain(alice.publicKey);
-   
+
     const tx = new Transaction();
     tx.txInputs = [
       new TransactionInput({
@@ -248,17 +254,17 @@ describe("Blockchain tests", () => {
     blockchain.addTransaction(tx);
     const validation = blockchain.addTransaction(tx);
     expect(validation.sucess).toBeFalsy();
-    expect(validation.message).toBe("Duplicate tx in blockchain")
+    expect(validation.message).toBe("Duplicate tx in blockchain");
   });
 
   // Teste do método getBlock
   test("10. Sould get block by hash", () => {
     const blockchain = new Blockchain(alice.publicKey);
     const genesisBlock = blockchain.blocks[0];
-    
+
     const foundBlock = blockchain.getBlock(genesisBlock.hash);
     expect(foundBlock).toEqual(genesisBlock);
-    
+
     const unexistent = blockchain.getBlock("unexistent");
     expect(unexistent).toBeUndefined();
   });
@@ -268,10 +274,10 @@ describe("Blockchain tests", () => {
     const blockchain = new Blockchain(alice.publicKey);
     const tx = new Transaction();
     tx.hash = "tx-mempool";
-    
+
     blockchain.mempool.push(tx);
     const result = blockchain.getTransaction(tx.hash);
-    
+
     expect(result.mempoolIndex).toBeGreaterThanOrEqual(0);
     expect(result.transaction).toEqual(tx);
   });
@@ -280,47 +286,47 @@ describe("Blockchain tests", () => {
   test("12.Should get a transaction in block", () => {
     const blockchain = new Blockchain(alice.publicKey);
     const txGenesis = blockchain.blocks[0].transactions[0];
-    
+
     const result = blockchain.getTransaction(txGenesis.hash);
-    
+
     expect(result.blockIndex).toBe(0);
     expect(result.transaction).toEqual(txGenesis);
   });
 
-  // // Teste de transação não encontrada
-  // test("deve retornar índices -1 para transação não encontrada", () => {
-  //   const blockchain = new Blockchain(alice.publicKey);
-  //   const resultado = blockchain.getTransaction("hash-inexistente");
-    
-  //   expect(resultado.blockIndex).toBe(-1);
-  //   expect(resultado.mempoolIndex).toBe(-1);
-  //   expect(resultado.transaction).toBeNull();
-  // });
+  // Teste de transação não encontrada
+  test("13. Must return index -1 for transaction not found", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    const result = blockchain.getTransaction("hash-inexistente");
 
-  // // Teste do método getNextBlock
-  // test("deve retornar null quando mempool vazia", () => {
-  //   const blockchain = new Blockchain(alice.publicKey);
-  //   blockchain.mempool = [];
-    
-  //   const resultado = blockchain.getNextBlock();
-  //   expect(resultado).toBeNull();
-  // });
+    expect(result.blockIndex).toBe(-1);
+    expect(result.mempoolIndex).toBe(-1);
+    expect(result.transaction).toBeNull();
+  });
 
-  // // Teste de obtenção do UTXO
-  // test("deve retornar UTXO correto da carteira", () => {
-  //   const blockchain = new Blockchain(alice.publicKey);
-  //   const utxo = blockchain.getUtxo(alice.publicKey);
-    
-  //   expect(utxo).toHaveLength(1); // Genesis block reward
-  //   expect(utxo[0].toAddress).toBe(alice.publicKey);
-  // });
+  // Teste do método getNextBlock
+  test("14.Should return null if the mempool is empty", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    blockchain.mempool = [];
+
+    const result = blockchain.getNextBlock();
+    expect(result).toBeNull();
+  });
+
+  // Teste de obtenção do UTXO
+  test("15.Should return the correct UTXO from wallet", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    const utxo = blockchain.getUtxo(alice.publicKey);
+
+    expect(utxo).toHaveLength(1); // Genesis block reward
+    expect(utxo[0].toAddress).toBe(alice.publicKey);
+  });
 
   // // Teste de cálculo de saldo
   // test("deve calcular saldo corretamente", () => {
   //   const blockchain = new Blockchain(alice.publicKey);
   //   const saldo = blockchain.getBalance(alice.publicKey);
   //   const recompensa = Blockchain.getRewardAmount(blockchain.getDifficulty());
-    
+
   //   expect(saldo).toBe(recompensa);
   //   expect(blockchain.getBalance(bob.publicKey)).toBe(0);
   // });
@@ -329,8 +335,7 @@ describe("Blockchain tests", () => {
   // test("deve calcular recompensa corretamente", () => {
   //   const dificuldade = 5;
   //   const recompensa = Blockchain.getRewardAmount(dificuldade);
-    
+
   //   expect(recompensa).toBe((64 - dificuldade) * 10);
   // });
-
 });
