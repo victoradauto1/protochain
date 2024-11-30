@@ -16,6 +16,7 @@ describe("Blockchain tests", () => {
   beforeAll(() => {
     alice = new Wallet();
     bob = new Wallet();
+    const atualização = "atualização"
   });
 
   // 1. Verifica se existe o bloco gênese
@@ -321,21 +322,21 @@ describe("Blockchain tests", () => {
     expect(utxo[0].toAddress).toBe(alice.publicKey);
   });
 
-  // // Teste de cálculo de saldo
-  // test("deve calcular saldo corretamente", () => {
-  //   const blockchain = new Blockchain(alice.publicKey);
-  //   const saldo = blockchain.getBalance(alice.publicKey);
-  //   const recompensa = Blockchain.getRewardAmount(blockchain.getDifficulty());
+  // Teste de cálculo de saldo
+  test("16.Should calculate the balance correct", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    const balance = blockchain.getBalance(alice.publicKey);
+    const reward = Blockchain.getRewardAmount(blockchain.getDifficulty());
 
-  //   expect(saldo).toBe(recompensa);
-  //   expect(blockchain.getBalance(bob.publicKey)).toBe(0);
-  // });
+    expect(balance).toBe(reward);
+    expect(blockchain.getBalance(bob.publicKey)).toBe(0);
+  });
 
-  // // Teste de cálculo de recompensa
-  // test("deve calcular recompensa corretamente", () => {
-  //   const dificuldade = 5;
-  //   const recompensa = Blockchain.getRewardAmount(dificuldade);
+  // Teste de cálculo de recompensa
+  test("17.Should calc the reward correctly", () => {
+    const difficulty = 5;
+    const recompensa = Blockchain.getRewardAmount(difficulty);
 
-  //   expect(recompensa).toBe((64 - dificuldade) * 10);
-  // });
+    expect(recompensa).toBe((64 - difficulty) * 10);
+  });
 });
