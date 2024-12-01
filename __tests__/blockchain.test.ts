@@ -339,4 +339,35 @@ describe("Blockchain tests", () => {
 
     expect(recompensa).toBe((64 - difficulty) * 10);
   });
+
+  // Teste para linhas 139-143: Validação de transação na mempool
+  test("18.Should valid the undefined mempool transactions", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    const tx = new Transaction();
+    tx.txInputs = undefined;
+    
+    const validation = blockchain.addTransaction(tx);
+    expect(validation.sucess).toBeTruthy();
+  });
+
+  // Teste para linhas 181-194: Validação de bloco inválido
+  test("19.Should reject the block when there is no information about the next block", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    jest.spyOn(blockchain, 'getNextBlock').mockReturnValue(null);
+    
+    const block = new Block();
+    const validation = blockchain.addBlock(block);
+    
+    expect(validation.sucess).toBeFalsy();
+    expect(validation.message).toBe("There´s no next block info.");
+  });
+
+  // // Teste para linhas 248-255: Verificação de UTXO vazio
+  // test("Deve retornar array vazio quando não houver TxOutputs", () => {
+  //   const blockchain = new Blockchain(alice.publicKey);
+  //   jest.spyOn(blockchain, 'getTxOutputs').mockReturnValue([]);
+    
+  //   const utxo = blockchain.getUtxo(alice.publicKey);
+  //   expect(utxo).toHaveLength(0);
+  // });
 });
