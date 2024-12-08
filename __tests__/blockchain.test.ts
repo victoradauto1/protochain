@@ -362,12 +362,12 @@ describe("Blockchain tests", () => {
     expect(validation.message).toBe("There´s no next block info.");
   });
 
-  // // Teste para linhas 248-255: Verificação de UTXO vazio
-  // test("Deve retornar array vazio quando não houver TxOutputs", () => {
-  //   const blockchain = new Blockchain(alice.publicKey);
-  //   jest.spyOn(blockchain, 'getTxOutputs').mockReturnValue([]);
+  // Teste para linhas 248-255: Verificação de UTXO vazio
+  test("20.Should return when there´s not TxOututs", () => {
+    const blockchain = new Blockchain(alice.publicKey);
+    jest.spyOn(blockchain, 'getTxOutputs').mockReturnValue([]);
     
-  //   const utxo = blockchain.getUtxo(alice.publicKey);
-  //   expect(utxo).toHaveLength(0);
-  // });
+    const utxo = blockchain.getUtxo(alice.publicKey);
+    expect(utxo).toHaveLength(0);
+  });
 });
